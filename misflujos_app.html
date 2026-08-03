@@ -689,17 +689,11 @@ const IS_SERVER = window.location.protocol !== "file:";
 
 // ── DATA LAYER: server when hosted, localStorage when local ──
 async function loadDB() {
-  if (IS_SERVER) {
-    try {
-      const r = await fetch("/api/data");
-      DB = await r.json();
-    } catch(e) {
-      console.error("loadDB error:", e);
-      DB = JSON.parse(localStorage.getItem("misflujos_db") || "null") || DEFAULT_DATA;
-    }
-  } else {
-    DB = JSON.parse(localStorage.getItem("misflujos_db") || "null") || DEFAULT_DATA;
-  }
+  // Try localStorage cache first for fast load
+  const cached = localStorage.getItem("misflujos_db");
+  if (cached) DB = JSON.parse(cached);
+  // Then load fresh from Supabase
+  await loadFromSupabase();
 }
 
 function save() {
@@ -708,30 +702,11 @@ function save() {
 }
 
 async function saveConfig() {
-  if (!IS_SERVER) return;
-  try {
-    await fetch("/api/config", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({
-        categorias: DB.categorias,
-        cuentas: DB.cuentas,
-        medios: DB.medios,
-        presupuestos: DB.presupuestos,
-        presupuestos_mensual: DB.presupuestos_mensual||{},
-        presupuestos_fijo: DB.presupuestos_fijo||{}
-      })
-    });
-  } catch(e) { console.error("saveConfig:", e); }
+  await saveConfigToSupabase();
 }
 
 async function savePresupuestoToServer() {
-  if (!IS_SERVER) return;
-  try {
-    await fetch("/api/presupuesto", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(DB.presupuestos)
-    });
-  } catch(e) { console.error("savePresupuesto:", e); }
+  await saveConfigToSupabase();
 }
 
 // ══════════════════════════════════════════
@@ -1046,16 +1021,8 @@ async function guardar() {
 
   const btn=document.getElementById("btn-guardar")||{};
   try {
-    if (IS_SERVER) {
-      const r = await fetch("/api/movimientos", {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify(mov)
-      });
-      const res = await r.json();
-      mov.id = res.id;
-    } else {
-      mov.id = Date.now().toString(36);
-    }
+    mov.id = Date.now().toString(36);
+    await saveMovToSupabase(mov);
     DB.movimientos.unshift(mov);
     save();
     showAlert(alertEl,"✓ Movimiento guardado correctamente","ok");
@@ -1185,9 +1152,7 @@ function renderHList() {
 
 async function delMov(id) {
   if(!confirm("¿Eliminar este movimiento?"))return;
-  if (IS_SERVER) {
-    try { await fetch("/api/movimientos/"+id, {method:"DELETE"}); } catch(e){}
-  }
+  await deleteMovFromSupabase(id);
   DB.movimientos=DB.movimientos.filter(m=>m.id!==id);
   save(); applyHFilters(); toast("Eliminado");
 }
@@ -1915,6 +1880,143 @@ async function initSync() {
 
 // INIT
 // ══════════════════════════════════════════
+// ── SUPABASE DIRECT CLIENT ──────────────────────────────────
+const SB_URL = "https://jfojpzdimckuaktrowtq.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impmb2pwemRpbWNrdWFrdHJvd3RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3NzY4OTgsImV4cCI6MjEwMTM1Mjg5OH0.riDpT1SOeYRLtLGmL3RVVH_OuiGk-ig2R8UBMnuwZGQ";
+
+async function sbGet(table, params="") {
+  const url = `${SB_URL}/rest/v1/${table}?${params}`;
+  const r = await fetch(url, {
+    headers: {
+      "apikey": SB_KEY,
+      "Authorization": `Bearer ${SB_KEY}`,
+      "Content-Type": "application/json"
+    }
+  });
+  if (!r.ok) throw new Error(`Supabase GET error: ${r.status}`);
+  return r.json();
+}
+
+async function sbPost(table, body) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: "POST",
+    headers: {
+      "apikey": SB_KEY,
+      "Authorization": `Bearer ${SB_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`Supabase POST error: ${r.status}`);
+  return r.json();
+}
+
+async function sbPatch(table, filter, body) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
+    method: "PATCH",
+    headers: {
+      "apikey": SB_KEY,
+      "Authorization": `Bearer ${SB_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`Supabase PATCH error: ${r.status}`);
+  return r.json();
+}
+
+async function sbDelete(table, filter) {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
+    method: "DELETE",
+    headers: {
+      "apikey": SB_KEY,
+      "Authorization": `Bearer ${SB_KEY}`,
+      "Content-Type": "application/json"
+    }
+  });
+  if (!r.ok) throw new Error(`Supabase DELETE error: ${r.status}`);
+  return true;
+}
+
+// ── SUPABASE DATA OPERATIONS ─────────────────────────────────
+async function loadFromSupabase() {
+  try {
+    // Load config
+    const cfgRows = await sbGet("configuracion", "select=data&limit=1");
+    if (cfgRows && cfgRows.length > 0) {
+      const cfg = JSON.parse(cfgRows[0].data);
+      DB.categorias = cfg.categorias || DB.categorias;
+      DB.cuentas    = cfg.cuentas    || DB.cuentas;
+      DB.medios     = cfg.medios     || DB.medios;
+      DB.presupuestos = cfg.presupuestos || DB.presupuestos;
+      DB.presupuestos_mensual = cfg.presupuestos_mensual || {};
+      DB.presupuestos_fijo    = cfg.presupuestos_fijo    || {};
+    }
+    // Load movimientos
+    const movRows = await sbGet("movimientos", "select=*&order=fecha.desc&limit=5000");
+    DB.movimientos = movRows.map(r => ({
+      id: r.id, fecha: r.fecha, tipo: r.tipo,
+      monto: parseFloat(r.monto)||0,
+      descripcion: r.descripcion||"",
+      categoria: r.categoria||"",
+      subcategoria: r.subcategoria||"",
+      medio: r.medio||"",
+      cuenta: r.cuenta||"",
+      notas: r.notas||"",
+      mes: parseInt(r.mes)||0,
+      anio: parseInt(r.anio)||new Date().getFullYear()
+    }));
+    save(); // update localStorage cache
+    return true;
+  } catch(e) {
+    console.error("Supabase load error:", e);
+    return false;
+  }
+}
+
+async function saveMovToSupabase(mov) {
+  try {
+    await sbPost("movimientos", mov);
+    return true;
+  } catch(e) {
+    console.error("Supabase save mov error:", e);
+    return false;
+  }
+}
+
+async function deleteMovFromSupabase(id) {
+  try {
+    await sbDelete("movimientos", `id=eq.${id}`);
+    return true;
+  } catch(e) {
+    console.error("Supabase delete error:", e);
+    return false;
+  }
+}
+
+async function saveConfigToSupabase() {
+  try {
+    const cfg = {
+      categorias: DB.categorias, cuentas: DB.cuentas,
+      medios: DB.medios, presupuestos: DB.presupuestos,
+      presupuestos_mensual: DB.presupuestos_mensual||{},
+      presupuestos_fijo: DB.presupuestos_fijo||{}
+    };
+    const rows = await sbGet("configuracion", "select=id&limit=1");
+    if (rows && rows.length > 0) {
+      await sbPatch("configuracion", `id=eq.${rows[0].id}`, {data: JSON.stringify(cfg)});
+    } else {
+      await sbPost("configuracion", {data: JSON.stringify(cfg)});
+    }
+    return true;
+  } catch(e) {
+    console.error("Supabase save config error:", e);
+    return false;
+  }
+}
+
 // ── MEDIO DE PAGO ICONS ──────────────────────────────────────
 const MEDIO_ICONS = {
   "Tarjeta Crédito":      {icon:"💳", color:"#9B59B6", label:"TC"},
@@ -2004,7 +2106,7 @@ async function refreshApp() {
   if (icon) icon.style.animation = "spin 1s linear infinite";
 
   try {
-    await loadDB();
+    await loadFromSupabase();
     // Re-render current active view
     const activeView = document.querySelector(".view.active")?.id?.replace("view-","");
     if (activeView === "dashboard")   renderDashboard();
