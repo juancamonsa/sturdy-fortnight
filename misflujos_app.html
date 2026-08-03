@@ -691,7 +691,11 @@ const IS_SERVER = window.location.protocol !== "file:";
 async function loadDB() {
   // Try localStorage cache first for fast load
   const cached = localStorage.getItem("misflujos_db");
-  if (cached) DB = JSON.parse(cached);
+  if (cached) {
+    DB = JSON.parse(cached);
+  } else {
+    DB = JSON.parse(JSON.stringify(DEFAULT_DATA)); // deep copy default
+  }
   // Then load fresh from Supabase
   await loadFromSupabase();
 }
@@ -1947,15 +1951,21 @@ async function loadFromSupabase() {
     const cfgRows = await sbGet("configuracion", "select=data&limit=1");
     if (cfgRows && cfgRows.length > 0) {
       const cfg = JSON.parse(cfgRows[0].data);
-      DB.categorias = cfg.categorias || DB.categorias;
-      DB.cuentas    = cfg.cuentas    || DB.cuentas;
-      DB.medios     = cfg.medios     || DB.medios;
-      DB.presupuestos = cfg.presupuestos || DB.presupuestos;
-      DB.presupuestos_mensual = cfg.presupuestos_mensual || {};
-      DB.presupuestos_fijo    = cfg.presupuestos_fijo    || {};
+      if (cfg.categorias && cfg.categorias.length > 0) {
+        DB.categorias = cfg.categorias;
+        DB.cuentas    = cfg.cuentas    || DB.cuentas;
+        DB.medios     = cfg.medios     || DB.medios;
+        DB.presupuestos = cfg.presupuestos || DB.presupuestos;
+        DB.presupuestos_mensual = cfg.presupuestos_mensual || {};
+        DB.presupuestos_fijo    = cfg.presupuestos_fijo    || {};
+      }
+    } else {
+      // No config in Supabase — save default config there
+      await saveConfigToSupabase();
     }
     // Load movimientos
     const movRows = await sbGet("movimientos", "select=*&limit=5000");
+    // Only update if we got valid rows
     DB.movimientos = movRows.map(r => ({
       id: r.id, fecha: r.fecha, tipo: r.tipo,
       monto: parseFloat(r.monto)||0,
@@ -1974,6 +1984,10 @@ async function loadFromSupabase() {
     return true;
   } catch(e) {
     console.error("Supabase load error:", e);
+    // On error, use localStorage cache
+    const cached = localStorage.getItem("misflujos_db");
+    if (cached) DB = JSON.parse(cached);
+    reRenderActive();
     return false;
   }
 }
