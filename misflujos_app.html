@@ -1969,11 +1969,24 @@ async function loadFromSupabase() {
       anio: parseInt(r.anio)||new Date().getFullYear()
     }));
     save(); // update localStorage cache
+    // Re-render current active view
+    reRenderActive();
     return true;
   } catch(e) {
     console.error("Supabase load error:", e);
     return false;
   }
+}
+
+function reRenderActive() {
+  const activeEl = document.querySelector(".view.active");
+  if (!activeEl) return;
+  const v = activeEl.id.replace("view-","");
+  if (v === "dashboard")    renderDashboard();
+  if (v === "historial")    { hPage=0; applyHFilters(); }
+  if (v === "presupuesto")  renderPresupuesto();
+  if (v === "registrar")    { renderRecientes(); renderBudgetPreview(); initRegistrar(); }
+  if (v === "config")       renderConfig();
 }
 
 async function saveMovToSupabase(mov) {
@@ -2137,7 +2150,10 @@ function toggleMobileNav() {
   }
 }
 
-loadDB().then(() => { initSync().then(() => showView("dashboard")); });
+loadDB().then(() => {
+  showView("dashboard");
+  initSync();
+});
 </script>
 </body>
 </html>
