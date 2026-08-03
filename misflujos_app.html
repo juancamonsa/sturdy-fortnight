@@ -162,14 +162,14 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .pill button:hover{color:var(--red)}
 
 /* ── HISTORIAL ITEM ── */
-.hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px;transition:border-color .15s}
+.hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px;transition:border-color .15s;gap:8px}
 .hist-item:hover{border-color:var(--text3)}
 .hist-desc{font-weight:600;font-size:13px}
 .hist-meta{font-size:11px;color:var(--text2);margin-top:2px}
 .hist-amount{font-family:var(--font-d);font-size:15px;font-weight:700}
 .hist-date{font-size:11px;color:var(--text3);margin-top:2px;text-align:right}
-.hist-del{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:4px;transition:color .15s;font-size:14px}
-.hist-del:hover{color:var(--red)}
+.hist-del{background:var(--rbg);border:1px solid rgba(231,76,60,.2);color:var(--red);cursor:pointer;padding:8px 10px;border-radius:var(--r-sm);transition:all .15s;font-size:16px;flex-shrink:0;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center}
+.hist-del:hover{background:var(--red);color:#fff}
 
 /* ── TOAST ── */
 .toast-c{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:999}
@@ -378,8 +378,10 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
             </div>
             <div class="monto-row">
               <span class="monto-sign" id="monto-sign">$</span>
-              <input type="number" class="monto-input" id="r-monto" placeholder="0" min="0" step="1000">
+              <input type="text" class="monto-input" id="r-monto" placeholder="0" inputmode="numeric" autocomplete="off"
+                oninput="formatMontoInput(this)" onblur="formatMontoInput(this)" onfocus="unformatMontoInput(this)">
             </div>
+            <div id="r-monto-display" style="font-size:11px;color:var(--text2);margin-top:-14px;margin-bottom:4px;padding-left:4px"></div>
             <div class="form-grid">
               <div class="field"><label>Descripción</label><input type="text" id="r-desc" placeholder="¿En qué gastaste?"></div>
               <div class="field"><label>Fecha</label><input type="date" id="r-fecha"></div>
@@ -1020,7 +1022,7 @@ function buildCuentaSel(selId="r-cuenta",all=false) {
 }
 
 async function guardar() {
-  const monto=parseFloat(document.getElementById("r-monto").value);
+  const montoEl=document.getElementById("r-monto"); const monto=parseMonto(montoEl.dataset.raw||montoEl.value);
   const catId=document.getElementById("r-cat").value;
   const cat=catById(catId);
   const fecha=document.getElementById("r-fecha").value;
@@ -1286,9 +1288,12 @@ function renderPresupuesto() {
           const fc = isFijo ? "var(--accent)" : "var(--orange)";
           return `<div class="psub-row" style="background:${bg}">
             <span class="psub-name">${s} <span style="font-size:9px;color:${fc}">${isFijo?"FIJO":"VAR"}</span></span>
-            <input type="number" class="psub-input" data-cat="${cat.id}" data-sub="${s}" data-mes="${mes!==null?mes:-1}"
-              value="${val}" min="0" step="1000" style="border-color:${isFijo?"var(--accent)":"var(--orange)"};color:var(--text)"
-              oninput="onPInput('${cat.id}')">
+            <input type="text" class="psub-input" data-cat="${cat.id}" data-sub="${s}" data-mes="${mes!==null?mes:-1}"
+              value="${fmtInput(val)}" data-raw="${val}" min="0"
+              style="border-color:${isFijo?"var(--accent)":"var(--orange)"};color:var(--text);text-align:right"
+              oninput="onPInputFmt(this,'${cat.id}')"
+              onfocus="this.value=this.dataset.raw||'0';this.select()"
+              onblur="this.dataset.raw=parseMonto(this.value);this.value=fmtInput(parseMonto(this.value));onPInput('${cat.id}')">
             <span class="psub-pct" id="ppct-${cat.id}-${s.replace(/\W/g,'_')}">—</span>
           </div>`;
         }).join("")}
@@ -1300,7 +1305,7 @@ function renderPresupuesto() {
 
 function onPInput(catId) {
   const inputs=document.querySelectorAll(`[data-cat="${catId}"]`);
-  let sum=0; inputs.forEach(i=>sum+=parseFloat(i.value)||0);
+  let sum=0; inputs.forEach(i=>sum+=parseMonto(i.dataset.raw||i.value)||0);
   const el=document.getElementById("ptotal-"+catId);
   if(el)el.textContent=fmt(sum);
   updatePPcts(catId);
@@ -1308,11 +1313,11 @@ function onPInput(catId) {
 
 function updatePPcts(catId) {
   const inputs=document.querySelectorAll(`[data-cat="${catId}"]`);
-  let sum=0; inputs.forEach(i=>sum+=parseFloat(i.value)||0);
+  let sum=0; inputs.forEach(i=>sum+=parseMonto(i.dataset.raw||i.value)||0);
   inputs.forEach(i=>{
     const key=`ppct-${catId}-${i.dataset.sub.replace(/\W/g,"_")}`;
     const el=document.getElementById(key);
-    if(el)el.textContent=sum>0?fmtP((parseFloat(i.value)||0)/sum):"—";
+    if(el)el.textContent=sum>0?fmtP((parseMonto(i.dataset.raw||i.value)||0)/sum):"—";
   });
 }
 async function savePresupuesto() {
@@ -1324,7 +1329,7 @@ async function savePresupuesto() {
   DB.categorias.forEach(cat=>{
     if (!DB.presupuestos[cat.id]) DB.presupuestos[cat.id] = {};
     document.querySelectorAll(`[data-cat="${cat.id}"]`).forEach(inp=>{
-      const v = parseFloat(inp.value)||0;
+      const v = parseMonto(inp.dataset.raw||inp.value)||0;
       const sub = inp.dataset.sub;
       const inpMes = parseInt(inp.dataset.mes);
       if (inpMes === -1 || mes === null) {
@@ -1533,7 +1538,10 @@ function renderCuentasCfg() {
         ${["Debito","Credito","Efectivo"].map(t=>`<option ${c.tipo===t?"selected":""}>${t}</option>`).join("")}
       </select>
       <input value="${c.banco}" data-i="${i}" data-f="banco" placeholder="Banco..." onchange="updateCuenta(this)">
-      <input type="number" value="${c.limite||0}" data-i="${i}" data-f="limite" onchange="updateCuenta(this)">
+      <input type="text" value="${fmtInput(c.limite||0)}" data-raw="${c.limite||0}" data-i="${i}" data-f="limite"
+      onfocus="this.value=this.dataset.raw||'0';this.select()"
+      onblur="this.dataset.raw=parseMonto(this.value);this.value=fmtInput(parseMonto(this.value));updateCuentaFmt(this)"
+      onchange="updateCuentaFmt(this)">
       <button class="btn btn-danger btn-sm" onclick="delCuenta(${i})">✕</button>
     </div>`).join("");
 }
@@ -1893,6 +1901,47 @@ async function initSync() {
 
 // INIT
 // ══════════════════════════════════════════
+// ── MONEY FORMAT HELPERS ──────────────────────────────────────
+function parseMonto(v) {
+  if (typeof v === "number") return v;
+  return parseFloat(String(v).replace(/[^0-9.]/g, "")) || 0;
+}
+
+function fmtInput(n) {
+  const v = parseMonto(n);
+  if (!v) return "";
+  return "$" + Math.round(v).toLocaleString("es-CO");
+}
+
+function formatMontoInput(el) {
+  const raw = parseMonto(el.value);
+  el.dataset.raw = raw;
+  if (raw) el.value = "$" + Math.round(raw).toLocaleString("es-CO");
+  else el.value = "";
+  // Update display hint
+  const disp = document.getElementById("r-monto-display");
+  if (disp) disp.textContent = raw > 0 ? "→ " + fmt(raw) : "";
+}
+
+function unformatMontoInput(el) {
+  const raw = parseMonto(el.dataset.raw || el.value);
+  el.value = raw || "";
+  el.select();
+}
+
+function onPInputFmt(el, catId) {
+  // While typing — don't reformat yet, just update totals
+  const raw = parseMonto(el.value);
+  el.dataset.raw = raw;
+  onPInput(catId);
+}
+
+function updateCuentaFmt(el) {
+  const raw = parseMonto(el.dataset.raw || el.value);
+  el.dataset.raw = raw;
+  updateCuenta(el);
+}
+
 function toggleMobileNav() {
   const nav = document.getElementById("mobile-nav");
   const overlay = document.getElementById("mobile-nav-overlay");
