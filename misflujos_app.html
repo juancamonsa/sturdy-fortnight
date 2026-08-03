@@ -253,12 +253,57 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
   <!-- MAIN -->
   <div class="main">
     <header class="topbar">
-      <div>
-        <div class="topbar-title" id="topbar-title">Dashboard</div>
-        <div class="topbar-sub" id="topbar-sub">Visión general de tus finanzas</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="hamburger-btn" onclick="toggleMobileNav()" aria-label="Menú">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <div class="topbar-title" id="topbar-title">Dashboard</div>
+          <div class="topbar-sub" id="topbar-sub">Visión general de tus finanzas</div>
+        </div>
       </div>
       <div class="topbar-right" id="topbar-right"></div>
     </header>
+    <!-- Mobile nav overlay -->
+    <div id="mobile-nav-overlay" onclick="toggleMobileNav()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50"></div>
+    <div id="mobile-nav" style="display:none;position:fixed;top:0;left:0;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);z-index:51;overflow-y:auto;transform:translateX(-100%);transition:transform .25s ease">
+      <div style="padding:20px 16px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--accent)">₱ MisFlujos</div>
+        <button onclick="toggleMobileNav()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px">✕</button>
+      </div>
+      <div style="padding:12px 8px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);font-weight:600;padding:8px 8px 4px">Principal</div>
+        <button class="nav-a" onclick="showView('dashboard');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="12" width="4" height="10"/><rect x="9" y="7" width="4" height="15"/><rect x="16" y="2" width="4" height="20"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-a" onclick="showView('registrar');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Registrar movimiento
+        </button>
+        <button class="nav-a" onclick="showView('historial');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+          Historial
+        </button>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);font-weight:600;padding:8px 8px 4px;margin-top:8px">Configuración</div>
+        <button class="nav-a" onclick="showView('presupuesto');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Presupuesto
+        </button>
+        <button class="nav-a" onclick="showView('config');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Configuración
+        </button>
+        <button class="nav-a" onclick="showView('sheets-config');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 14h16M9 4v16"/></svg>
+          Google Sheets
+        </button>
+        <div style="padding:16px 8px;border-top:1px solid var(--border);margin-top:12px">
+          <button class="btn btn-ghost btn-sm" style="width:100%;font-size:11px;margin-bottom:6px" onclick="exportData()">📥 Exportar JSON</button>
+          <button class="btn btn-ghost btn-sm" style="width:100%;font-size:11px" onclick="document.getElementById('import-file').click()">📤 Importar JSON</button>
+        </div>
+      </div>
+    </div>
 
     <div class="content">
 
@@ -1848,6 +1893,21 @@ async function initSync() {
 
 // INIT
 // ══════════════════════════════════════════
+function toggleMobileNav() {
+  const nav = document.getElementById("mobile-nav");
+  const overlay = document.getElementById("mobile-nav-overlay");
+  const isOpen = nav.style.transform === "translateX(0px)" || nav.style.transform === "translateX(0)";
+  if (isOpen) {
+    nav.style.transform = "translateX(-100%)";
+    overlay.style.display = "none";
+    setTimeout(() => { nav.style.display = "none"; }, 250);
+  } else {
+    nav.style.display = "block";
+    overlay.style.display = "block";
+    setTimeout(() => { nav.style.transform = "translateX(0)"; }, 10);
+  }
+}
+
 loadDB().then(() => { initSync().then(() => showView("dashboard")); });
 </script>
 </body>
