@@ -262,7 +262,12 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
           <div class="topbar-sub" id="topbar-sub">Visión general de tus finanzas</div>
         </div>
       </div>
-      <div class="topbar-right" id="topbar-right"></div>
+      <div class="topbar-right" id="topbar-right">
+        <button onclick="refreshApp()" id="btn-refresh" title="Sincronizar datos" style="background:none;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text2);cursor:pointer;padding:6px 10px;display:flex;align-items:center;gap:5px;font-size:12px;transition:all .15s">
+          <svg id="refresh-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <span>Actualizar</span>
+        </button>
+      </div>
     </header>
     <!-- Mobile nav overlay -->
     <div id="mobile-nav-overlay" onclick="toggleMobileNav()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50"></div>
@@ -1071,8 +1076,11 @@ function renderRecientes() {
   const movs=DB.movimientos.slice(0,10);
   if(!movs.length){el.innerHTML='<div class="text-muted text-sm">Sin movimientos aún.</div>';return;}
   el.innerHTML=movs.map(m=>`<div class="hist-item" style="margin-bottom:4px">
-    <div><div class="hist-desc">${m.descripcion||m.subcategoria}</div><div class="hist-meta">${m.categoria} · ${fmtDate(m.fecha)}</div></div>
-    <div class="text-right"><div class="hist-amount ${m.tipo==="Gasto"?"text-red":"text-green"}">${m.tipo==="Gasto"?"-":"+"} ${fmt(m.monto,true)}</div></div>
+    <div style="flex:1;min-width:0"><div class="hist-desc">${m.descripcion||m.subcategoria}</div><div class="hist-meta">${m.categoria} · ${fmtDate(m.fecha)}</div></div>
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+      ${getMedioIcon(m.medio)}
+      <div class="hist-amount ${m.tipo==="Gasto"?"text-red":"text-green"}">${m.tipo==="Gasto"?"-":"+"} ${fmt(m.monto,true)}</div>
+    </div>
   </div>`).join("");
 }
 
@@ -1152,15 +1160,21 @@ function renderHList() {
   const el=document.getElementById("h-list");
   if(!slice.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><h3>Sin movimientos</h3><p>Ajusta los filtros o registra tu primer movimiento.</p></div>';document.getElementById("h-pagination").innerHTML="";return;}
   el.innerHTML=slice.map(m=>`<div class="hist-item">
-    <div style="flex:1">
-      <div class="hist-desc">${m.descripcion||m.subcategoria}</div>
-      <div class="hist-meta">${m.categoria} · ${m.subcategoria} · ${m.medio} · ${m.cuenta}</div>
+    <div style="flex:1;min-width:0">
+      <div class="hist-desc" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.descripcion||m.subcategoria}</div>
+      <div class="hist-meta">${m.categoria} · ${m.subcategoria}</div>
+      <div class="hist-meta" style="margin-top:2px">${m.cuenta}</div>
     </div>
-    <div class="text-right" style="margin:0 12px">
-      <div class="hist-amount ${m.tipo==="Gasto"?"text-red":"text-green"}">${m.tipo==="Gasto"?"-":"+"} ${fmt(m.monto)}</div>
-      <div class="hist-date">${fmtDate(m.fecha)}</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+          ${getMedioIcon(m.medio)}
+          <span class="hist-amount ${m.tipo==="Gasto"?"text-red":"text-green"}">${m.tipo==="Gasto"?"-":"+"} ${fmt(m.monto)}</span>
+        </div>
+        <div class="hist-date">${fmtDate(m.fecha)}</div>
+      </div>
+      <button class="hist-del" onclick="delMov('${m.id}')" title="Eliminar">🗑</button>
     </div>
-    <button class="hist-del" onclick="delMov('${m.id}')" title="Eliminar">🗑</button>
   </div>`).join("");
   const tp=Math.ceil(hFiltered.length/PAGE_SIZE);
   document.getElementById("h-pagination").innerHTML=`
@@ -1901,6 +1915,26 @@ async function initSync() {
 
 // INIT
 // ══════════════════════════════════════════
+// ── MEDIO DE PAGO ICONS ──────────────────────────────────────
+const MEDIO_ICONS = {
+  "Tarjeta Crédito":      {icon:"💳", color:"#9B59B6", label:"TC"},
+  "Tarjeta Débito":       {icon:"💳", color:"#3D8EF0", label:"TD"},
+  "Efectivo":             {icon:"💵", color:"#2ECC71", label:"EFE"},
+  "Transferencia Bancaria":{icon:"🏦", color:"#1ABC9C", label:"TRF"},
+  "PSE":                  {icon:"📱", color:"#F39C12", label:"PSE"},
+  "Cheque":               {icon:"📄", color:"#95A5A6", label:"CHQ"},
+  "Otro":                 {icon:"💸", color:"#E74C3C", label:"OTR"},
+};
+
+function getMedioIcon(medio) {
+  const m = MEDIO_ICONS[medio] || {icon:"💸", color:"#7F8C8D", label:"OTR"};
+  return `<span title="${medio}" style="
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:6px;font-size:14px;
+    background:${m.color}22;border:1px solid ${m.color}44;
+    flex-shrink:0;cursor:default" >${m.icon}</span>`;
+}
+
 // ── MONEY FORMAT HELPERS ──────────────────────────────────────
 function parseMonto(v) {
   if (typeof v === "number") return v;
@@ -1961,6 +1995,29 @@ function updateCuentaFmt(el) {
   const raw = parseMonto(el.dataset.raw || el.value);
   el.dataset.raw = raw;
   updateCuenta(el);
+}
+
+async function refreshApp() {
+  const btn = document.getElementById("btn-refresh");
+  const icon = document.getElementById("refresh-icon");
+  if (btn) btn.style.opacity = "0.5";
+  if (icon) icon.style.animation = "spin 1s linear infinite";
+
+  try {
+    await loadDB();
+    // Re-render current active view
+    const activeView = document.querySelector(".view.active")?.id?.replace("view-","");
+    if (activeView === "dashboard")   renderDashboard();
+    if (activeView === "historial")   { applyHFilters(); }
+    if (activeView === "presupuesto") renderPresupuesto();
+    if (activeView === "registrar")   { renderRecientes(); renderBudgetPreview(); }
+    toast("Datos actualizados ✓");
+  } catch(e) {
+    toast("Error al actualizar: " + e.message, "err");
+  } finally {
+    if (btn) btn.style.opacity = "1";
+    if (icon) icon.style.animation = "";
+  }
 }
 
 function toggleMobileNav() {
