@@ -1955,7 +1955,7 @@ async function loadFromSupabase() {
       DB.presupuestos_fijo    = cfg.presupuestos_fijo    || {};
     }
     // Load movimientos
-    const movRows = await sbGet("movimientos", "select=*&order=fecha.desc&limit=5000");
+    const movRows = await sbGet("movimientos", "select=*&limit=5000");
     DB.movimientos = movRows.map(r => ({
       id: r.id, fecha: r.fecha, tipo: r.tipo,
       monto: parseFloat(r.monto)||0,
