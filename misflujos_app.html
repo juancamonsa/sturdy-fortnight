@@ -378,8 +378,8 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
             </div>
             <div class="monto-row">
               <span class="monto-sign" id="monto-sign">$</span>
-              <input type="text" class="monto-input" id="r-monto" placeholder="0" inputmode="numeric" autocomplete="off"
-                oninput="formatMontoInput(this)" onblur="formatMontoInput(this)" onfocus="unformatMontoInput(this)">
+              <input type="text" class="monto-input" id="r-monto" placeholder="0" inputmode="decimal" autocomplete="off"
+                oninput="previewMontoInput(this)" onblur="formatMontoInput(this)" onfocus="unformatMontoInput(this)">
             </div>
             <div id="r-monto-display" style="font-size:11px;color:var(--text2);margin-top:-14px;margin-bottom:4px;padding-left:4px"></div>
             <div class="form-grid">
@@ -1904,23 +1904,44 @@ async function initSync() {
 // ── MONEY FORMAT HELPERS ──────────────────────────────────────
 function parseMonto(v) {
   if (typeof v === "number") return v;
-  return parseFloat(String(v).replace(/[^0-9.]/g, "")) || 0;
+  // Remove everything except digits, comma and dot
+  let s = String(v).replace(/[^0-9.,]/g, "");
+  // Handle Colombian format: dots as thousands, comma as decimal
+  // If has comma, treat as decimal separator
+  if (s.includes(",")) {
+    s = s.replace(/\./g, "").replace(",", ".");
+  } else {
+    // Remove dots used as thousands separators (more than one digit after last dot)
+    s = s.replace(/\.(\d{3})/g, "$1");
+  }
+  return parseFloat(s) || 0;
 }
 
 function fmtInput(n) {
   const v = parseMonto(n);
   if (!v) return "";
-  return "$" + Math.round(v).toLocaleString("es-CO");
+  // Format with Colombian locale, no decimals for whole numbers
+  if (v % 1 === 0) {
+    return "$" + Math.round(v).toLocaleString("es-CO");
+  }
+  return "$" + v.toLocaleString("es-CO", {minimumFractionDigits:0, maximumFractionDigits:2});
+}
+
+function previewMontoInput(el) {
+  // Just update the preview while typing, don't reformat the input
+  const raw = parseMonto(el.value);
+  el.dataset.raw = raw;
+  const disp = document.getElementById("r-monto-display");
+  if (disp) disp.textContent = raw > 0 ? "→ " + fmt(raw) : "";
 }
 
 function formatMontoInput(el) {
   const raw = parseMonto(el.value);
   el.dataset.raw = raw;
-  if (raw) el.value = "$" + Math.round(raw).toLocaleString("es-CO");
+  if (raw) el.value = fmtInput(raw);
   else el.value = "";
-  // Update display hint
   const disp = document.getElementById("r-monto-display");
-  if (disp) disp.textContent = raw > 0 ? "→ " + fmt(raw) : "";
+  if (disp) disp.textContent = "";
 }
 
 function unformatMontoInput(el) {
