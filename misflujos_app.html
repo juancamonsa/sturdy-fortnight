@@ -2930,14 +2930,6 @@ function toggleMobileNav() {
   }
 }
 
-loadDB().then(() => {
-  showView("dashboard");
-  initSync();
-});
-</script>
-</body>
-</html>
-<script>
 // ══════════════════════════════════════════════════════════════
 // MODULE 1: CUENTAS BANCARIAS CON BOLSILLOS
 // ══════════════════════════════════════════════════════════════
@@ -3449,4 +3441,13 @@ function renderDashCuentaT() {
 
   container.innerHTML = html;
 }
+
+
+loadDB().then(() => {
+  showView("dashboard");
+  initSync();
+});
 </script>
+</body>
+</html>
+
