@@ -506,7 +506,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
         <div class="filters">
           <div class="field"><label>Año</label><select id="h-anio"></select></div>
           <div class="field"><label>Mes</label><select id="h-mes"><option value="">Todos</option></select></div>
-          <div class="field"><label>Tipo</label><select id="h-tipo"><option value="">Ambos</option><option>Gasto</option><option>Ingreso</option></select></div>
+          <div class="field"><label>Tipo</label><select id="h-tipo"><option value="">Todos</option><option>Gasto</option><option>Ingreso</option><option>Transferencia</option></select></div>
           <div class="field"><label>Categoría</label><select id="h-cat"></select></div>
           <div class="field"><label>Cuenta</label><select id="h-cuenta"></select></div>
           <div class="field"><label>Buscar</label><input type="text" id="h-q" placeholder="Descripción..."></div>
@@ -1021,7 +1021,7 @@ function filterMovs(y, m) {
 }
 function catById(id) { return DB.categorias.find(c=>c.id===id); }
 function catBudget(id) { return Object.values(DB.presupuestos[id]||{}).reduce((a,b)=>a+b,0); }
-function catReal(movs, nombre) { return movs.filter(m=>m.tipo==="Gasto"&&m.categoria===nombre).reduce((s,m)=>s+m.monto,0); }
+function catReal(movs, nombre) { return movs.filter(m=>m.tipo==="Gasto"&&m.categoria===nombre&&m.categoria!=="🔄 Transferencia").reduce((s,m)=>s+m.monto,0); }
 function mkChart(id,cfg) {
   if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}
   Chart.defaults.color="#8A9BB5"; Chart.defaults.font.family="'Inter',sans-serif";
@@ -1157,8 +1157,8 @@ function renderResumen(movs,y,m) {
   const ingArr=[],gasArr=[];
   MONTHS.forEach((_,i)=>{
     const ms=allMovsByY.filter(x=>x.mes===i);
-    ingArr.push(ms.filter(x=>x.tipo==="Ingreso").reduce((s,x)=>s+x.monto,0));
-    gasArr.push(ms.filter(x=>x.tipo==="Gasto").reduce((s,x)=>s+x.monto,0));
+    ingArr.push(ms.filter(x=>x.tipo==="Ingreso"&&x.categoria!=="🔄 Transferencia").reduce((s,x)=>s+x.monto,0));
+    gasArr.push(ms.filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia").reduce((s,x)=>s+x.monto,0));
   });
   const lbls=MONTHS.map(m=>m.substring(0,3));
   mkChart("c-inggas",{type:"bar",data:{labels:lbls,datasets:[
@@ -1342,7 +1342,7 @@ async function guardar() {
     if (TIPO==="Transferencia" && cuentaDestino) {
       const movDest = {...mov,
         id: Date.now().toString(36)+"_d",
-        tipo: "Ingreso",
+        tipo: "Transferencia",
         cuenta: cuentaDestino,
         cuenta_destino: cuentaOrigen,
         descripcion: `Transf. desde ${cuentaOrigen}`,
@@ -1381,7 +1381,7 @@ function renderRecientes() {
 
 function renderBudgetPreview() {
   const now=new Date(),m=now.getMonth(),y=now.getFullYear();
-  const movs=DB.movimientos.filter(x=>x.mes===m&&x.anio===y&&x.tipo==="Gasto");
+  const movs=DB.movimientos.filter(x=>x.mes===m&&x.anio===y&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
   const el=document.getElementById("r-budget-preview");
   el.innerHTML=DB.categorias.filter(c=>!c.nombre.includes("💵")).map(c=>{
     const b=catBudget(c.id),r=catReal(movs,c.nombre),p=b>0?r/b:0;
@@ -1440,8 +1440,8 @@ function applyHFilters() {
 }
 
 function renderHSummary() {
-  const ing=hFiltered.filter(m=>m.tipo==="Ingreso").reduce((s,m)=>s+m.monto,0);
-  const gas=hFiltered.filter(m=>m.tipo==="Gasto").reduce((s,m)=>s+m.monto,0);
+  const ing=hFiltered.filter(m=>m.tipo==="Ingreso"&&m.categoria!=="🔄 Transferencia").reduce((s,m)=>s+m.monto,0);
+  const gas=hFiltered.filter(m=>m.tipo==="Gasto"&&m.categoria!=="🔄 Transferencia").reduce((s,m)=>s+m.monto,0);
   document.getElementById("h-summary").innerHTML=`
     <div class="kpi g"><div class="kpi-lbl">Ingresos</div><div class="kpi-val">${fmt(ing,true)}</div><div class="kpi-sub">${hFiltered.filter(m=>m.tipo==="Ingreso").length} movimientos</div></div>
     <div class="kpi r"><div class="kpi-lbl">Gastos</div><div class="kpi-val">${fmt(gas,true)}</div><div class="kpi-sub">${hFiltered.filter(m=>m.tipo==="Gasto").length} movimientos</div></div>
