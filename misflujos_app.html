@@ -128,6 +128,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .tipo-toggle{display:flex;gap:6px;background:var(--bg3);padding:4px;border-radius:var(--r-sm);margin-bottom:20px;width:fit-content}
 .tipo-btn{padding:9px 22px;border-radius:var(--r-sm);border:none;background:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--text2)}
 .tipo-btn.g.active{background:var(--gbg);color:var(--green)}
+.tipo-btn.tr.active{background:rgba(61,142,240,.15);color:var(--accent)}
 .tipo-btn.r.active{background:var(--rbg);color:var(--red)}
 
 /* ── MONTO INPUT ── */
@@ -464,6 +465,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
             <div class="tipo-toggle">
               <button class="tipo-btn r active" id="rb-gasto" onclick="setTipo('Gasto')">💸 Gasto</button>
               <button class="tipo-btn g" id="rb-ingreso" onclick="setTipo('Ingreso')">💵 Ingreso</button>
+              <button class="tipo-btn" id="rb-transferencia" onclick="setTipo('Transferencia')" style="color:var(--text2)">🔄 Transferencia</button>
             </div>
             <div class="monto-row">
               <span class="monto-sign" id="monto-sign">$</span>
@@ -1243,6 +1245,7 @@ function initRegistrar() {
   buildCatSel();
   buildMedioSel();
   buildCuentaSel();
+  buildCuentaSel("r-cuenta-destino");
   renderRecientes();
   renderBudgetPreview();
 }
@@ -1251,8 +1254,23 @@ function setTipo(t) {
   TIPO=t;
   document.getElementById("rb-gasto").classList.toggle("active",t==="Gasto");
   document.getElementById("rb-ingreso").classList.toggle("active",t==="Ingreso");
-  document.getElementById("rb-gasto").classList.toggle("r",true);
-  document.getElementById("rb-ingreso").classList.toggle("g",true);
+  document.getElementById("rb-transferencia").classList.toggle("active",t==="Transferencia");
+  document.getElementById("rb-transferencia").classList.toggle("tr",true);
+  // Show/hide cuenta destino
+  const destinoWrap = document.getElementById("r-cuenta-destino-wrap");
+  const cuentaLabel = document.getElementById("r-cuenta-label");
+  if (t==="Transferencia") {
+    destinoWrap.classList.remove("hidden");
+    cuentaLabel.textContent = "Cuenta origen";
+  } else {
+    destinoWrap.classList.add("hidden");
+    cuentaLabel.textContent = "Cuenta / Tarjeta";
+  }
+  // For transferencias, hide category
+  const catWrap = document.getElementById("r-cat")?.closest(".field");
+  const subWrap = document.getElementById("r-sub")?.closest(".field");
+  if (catWrap) catWrap.style.opacity = t==="Transferencia"?"0.3":"1";
+  if (subWrap) subWrap.style.opacity = t==="Transferencia"?"0.3":"1";
   buildCatSel();
 }
 
@@ -1298,21 +1316,39 @@ async function guardar() {
   if(!monto||monto<=0){showAlert(alertEl,"Ingresa un monto válido","err");return;}
   if(!fecha){showAlert(alertEl,"Selecciona una fecha","err");return;}
   const d=new Date(fecha+"T12:00:00");
+  const cuentaOrigen  = document.getElementById("r-cuenta").value;
+  const cuentaDestino = document.getElementById("r-cuenta-destino")?.value || "";
+
   const mov={fecha,tipo:TIPO,monto,
-    descripcion:document.getElementById("r-desc").value.trim(),
-    categoria:cat?.nombre||"",
-    subcategoria:document.getElementById("r-sub").value,
-    medio:document.getElementById("r-medio").value,
-    cuenta:document.getElementById("r-cuenta").value,
-    notas:document.getElementById("r-notas").value.trim(),
+    descripcion:document.getElementById("r-desc").value.trim() || (TIPO==="Transferencia"?`Transf. → ${cuentaDestino}`:""),
+    categoria:  TIPO==="Transferencia"?"🔄 Transferencia":(cat?.nombre||""),
+    subcategoria:TIPO==="Transferencia"?`→ ${cuentaDestino}`:(document.getElementById("r-sub").value),
+    medio:      document.getElementById("r-medio").value,
+    cuenta:     cuentaOrigen,
+    cuenta_destino: TIPO==="Transferencia"?cuentaDestino:"",
+    notas:      document.getElementById("r-notas").value.trim(),
     mes:d.getMonth(),anio:d.getFullYear()};
 
-  const btn=document.getElementById("btn-guardar")||{};
   try {
     mov.id = Date.now().toString(36);
     await saveMovToSupabase(mov);
     DB.movimientos.unshift(mov);
     save();
+    // If transferencia, also create the receiving entry in destino account
+    if (TIPO==="Transferencia" && cuentaDestino) {
+      const movDest = {...mov,
+        id: Date.now().toString(36)+"_d",
+        tipo: "Ingreso",
+        cuenta: cuentaDestino,
+        cuenta_destino: cuentaOrigen,
+        descripcion: `Transf. desde ${cuentaOrigen}`,
+        categoria: "🔄 Transferencia",
+        subcategoria: `← ${cuentaOrigen}`
+      };
+      await saveMovToSupabase(movDest);
+      DB.movimientos.unshift(movDest);
+      save();
+    }
     showAlert(alertEl,"✓ Movimiento guardado correctamente","ok");
     document.getElementById("r-monto").value="";
     document.getElementById("r-desc").value="";
