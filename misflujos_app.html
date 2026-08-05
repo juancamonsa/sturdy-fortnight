@@ -199,6 +199,72 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .hidden{display:none!important}
 @media(max-width:700px){.sidebar{display:none}.grid-2,.grid-3{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}}
+
+/* ── CUENTAS & INVERSIONES ── */
+.bolsillos-wrap{padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
+.bolsillo-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bolsillo-row:last-child{border-bottom:none}
+.cuenta-t{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.t-col{padding:12px 16px}
+.t-col:first-child{border-right:1px solid var(--border)}
+.t-col-label{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.t-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:3px 0}
+.t-total{display:flex;justify-content:space-between;font-size:13px;font-weight:700;border-top:1px solid var(--border);padding-top:6px;margin-top:6px}
+.cuenta-balance{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg)}
+.inv-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}
+.inv-stat{padding:10px 12px;border-right:1px solid var(--border)}
+.inv-stat:last-child{border-right:none}
+.inv-stat-label{font-size:10px;color:var(--text2);margin-bottom:4px}
+.inv-stat-val{font-size:14px;font-weight:700}
+.inv-actions-bar{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);flex-wrap:wrap}
+.ct-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.ct-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r)}
+.ct-card-header{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--border)}
+.ct-card-body{display:grid;grid-template-columns:1fr 1fr}
+.ct-card-col{padding:10px 12px}
+.ct-card-col:first-child{border-right:1px solid var(--border)}
+.ct-card-col-label{font-size:10px;color:var(--text2);font-weight:600;margin-bottom:6px}
+.ct-card-item{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding:2px 0}
+.ct-card-subtotal{font-size:12px;font-weight:700;border-top:1px solid var(--border);padding-top:5px;margin-top:5px;display:flex;justify-content:space-between}
+.ct-card-footer{padding:8px 12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg)}
+.patrimonio-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.cat-expand-movs{background:var(--bg);border-bottom:1px solid var(--border)}
+.cat-expand-row{display:flex;justify-content:space-between;align-items:center;padding:7px 14px 7px 28px;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
+.cat-expand-row:last-child{border-bottom:none}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}
+.modal-title{font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+
+/* ── CUENTAS ── */
+.cta-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.cta-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer}
+.cta-card-hdr:hover{background:rgba(255,255,255,.02)}
+.cta-card-name{font-weight:600;font-size:14px}
+.cta-card-saldo{font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--green)}
+.bolsillos-wrap{border-top:1px solid var(--border);background:rgba(0,0,0,.15);padding:10px 16px}
+.bolsillo-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bolsillo-row:last-child{border-bottom:none}
+.cta-t-wrap{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.cta-t-col{padding:12px 16px}
+.cta-t-col:first-child{border-right:1px solid var(--border)}
+.cta-t-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.cta-t-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:3px 0}
+.cta-t-total{display:flex;justify-content:space-between;font-size:13px;font-weight:700;border-top:1px solid var(--border);padding-top:6px;margin-top:6px}
+.cta-balance-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-top:1px solid var(--border);background:rgba(0,0,0,.15)}
+/* ── INVERSIONES ── */
+.inv-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.inv-card-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:13px 16px}
+.inv-card-name{font-weight:600;font-size:14px}
+.inv-card-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.inv-stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}
+.inv-stat{padding:10px 14px;border-right:1px solid var(--border)}
+.inv-stat:last-child{border-right:none}
+.inv-stat-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+.inv-stat-val{font-size:15px;font-weight:700;font-family:var(--font-d)}
+.inv-actions-row{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--border);flex-wrap:wrap}
+.inv-badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.inv-hist-item{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px}
+.inv-hist-item:last-child{border-bottom:none}
 </style>
 </head>
 <body>
@@ -229,6 +295,16 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         Presupuesto
       </button>
+      <div class="nav-lbl" style="margin-top:8px">Finanzas</div>
+      <button class="nav-a" data-view="cuentas" onclick="showView('cuentas')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Cuentas
+      </button>
+      <button class="nav-a" data-view="inversiones" onclick="showView('inversiones')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Inversiones
+      </button>
+      <div class="nav-lbl" style="margin-top:8px">Config</div>
       <button class="nav-a" data-view="config" onclick="showView('config')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Configuración
@@ -236,6 +312,15 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
       <button class="nav-a" data-view="sheets-config" onclick="showView('sheets-config')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 14h16M9 4v16"/></svg>
         Google Sheets
+      </button>
+      <div class="nav-lbl" style="margin-top:8px">Finanzas</div>
+      <button class="nav-a" data-view="cuentas" onclick="showView('cuentas')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Cuentas
+      </button>
+      <button class="nav-a" data-view="inversiones" onclick="showView('inversiones')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Inversiones
       </button>
     </nav>
     <div class="sidebar-footer">
@@ -294,6 +379,14 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
         <button class="nav-a" onclick="showView('presupuesto');toggleMobileNav()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           Presupuesto
+        </button>
+        <button class="nav-a" onclick="showView('cuentas');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Cuentas
+        </button>
+        <button class="nav-a" onclick="showView('inversiones');toggleMobileNav()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Inversiones
         </button>
         <button class="nav-a" onclick="showView('config');toggleMobileNav()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -544,6 +637,86 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
       </div>
 
 
+      <!-- ════ CUENTAS BANCARIAS ════ -->
+      <div class="view" id="view-cuentas">
+        <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px">
+          <select id="cta-mes" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 10px;font-size:13px;outline:none;appearance:none"></select>
+          <select id="cta-anio" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 10px;font-size:13px;outline:none;appearance:none"></select>
+          <button class="btn btn-ghost" onclick="initCuentas()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
+            Actualizar
+          </button>
+        </div>
+
+        <!-- KPIs cuentas -->
+        <div class="kpi-grid" id="cta-kpis" style="margin-bottom:20px"></div>
+
+        <!-- Lista de cuentas con bolsillos -->
+        <div id="cta-list"></div>
+
+        <!-- Cuenta T del mes -->
+        <div style="margin-top:20px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text2)">Balance por cuenta — {{mes actual}}</div>
+          <div id="cta-t-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px"></div>
+        </div>
+      </div>
+
+      <!-- ════ INVERSIONES ════ -->
+      <div class="view" id="view-inversiones">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div class="kpi-grid" id="inv-kpis" style="margin-bottom:0;flex:1"></div>
+          <button class="btn btn-primary" onclick="showInvModal()">+ Nueva inversión</button>
+        </div>
+        <div id="inv-list"></div>
+
+        <!-- Modal nueva inversión -->
+        <div id="inv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:16px">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:440px;width:100%">
+            <div style="font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:16px">Nueva inversión</div>
+            <div class="form-grid">
+              <div class="field field-full"><label>Nombre</label><input type="text" id="inv-nombre" placeholder="Ej: Nubank CDT"></div>
+              <div class="field"><label>Plataforma</label><input type="text" id="inv-plataforma" placeholder="Nubank, Trueque..."></div>
+              <div class="field"><label>Tipo</label>
+                <select id="inv-tipo">
+                  <option>CDT</option><option>Acciones</option><option>Fondo</option>
+                  <option>Cripto</option><option>Bonos</option><option>Otro</option>
+                </select>
+              </div>
+              <div class="field"><label>Saldo inicial ($)</label><input type="text" id="inv-saldo-ini" placeholder="0" inputmode="decimal" onfocus="this.select()" onblur="this.value=fmtInput(parseMonto(this.value))"></div>
+              <div class="field"><label>Fecha inicio</label><input type="date" id="inv-fecha-ini"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:16px">
+              <button class="btn btn-primary w-full" onclick="saveInversion()">Crear inversión</button>
+              <button class="btn btn-ghost" onclick="closeInvModal()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal movimiento inversión -->
+        <div id="inv-mov-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:16px">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:380px;width:100%">
+            <div style="font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:4px" id="inv-mov-title">Registrar movimiento</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:16px" id="inv-mov-sub"></div>
+            <div class="form-grid">
+              <div class="field field-full"><label>Tipo</label>
+                <select id="inv-mov-tipo">
+                  <option value="deposito">Depósito</option>
+                  <option value="retiro">Retiro</option>
+                  <option value="rendimiento">Rendimiento</option>
+                </select>
+              </div>
+              <div class="field"><label>Monto ($)</label><input type="text" id="inv-mov-monto" placeholder="0" inputmode="decimal" onfocus="this.select()" onblur="this.value=fmtInput(parseMonto(this.value))"></div>
+              <div class="field"><label>Fecha</label><input type="date" id="inv-mov-fecha"></div>
+              <div class="field field-full"><label>Notas</label><input type="text" id="inv-mov-notas" placeholder="Opcional"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:16px">
+              <button class="btn btn-primary w-full" onclick="saveInvMovimiento()">Guardar</button>
+              <button class="btn btn-ghost" onclick="closeInvMovModal()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ════ GOOGLE SHEETS CONFIG ════ -->
       <div class="view" id="view-sheets-config">
         <div style="max-width:600px">
@@ -617,6 +790,118 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
             <strong style="color:var(--accent)">¿Cómo funciona?</strong><br>
             Cada vez que guardas un movimiento, la app lo escribe en tu Google Sheet automáticamente. Cuando abres la app en otro dispositivo, lee los datos del mismo Sheet. Tus datos siempre están en tu cuenta de Google — no en ningún servidor externo.
           </div>
+        </div>
+      </div>
+
+
+      <!-- ════ CUENTAS ════ -->
+      <div class="view" id="view-cuentas">
+        <div class="flex justify-between items-center flex-wrap gap-8" style="margin-bottom:16px">
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0;flex:1" id="cuentas-kpis"></div>
+          <button class="btn btn-primary" onclick="showModalCuenta()">+ Agregar cuenta</button>
+        </div>
+        <div id="cuentas-list" style="margin-bottom:24px"></div>
+        <div class="section-title" style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Balance por cuenta — Cuenta T del mes</div>
+        <div class="month-nav" style="margin-bottom:12px">
+          <button class="nav-arrow" id="ct-prev">‹</button>
+          <span id="ct-month-label" class="month-label"></span>
+          <button class="nav-arrow" id="ct-next">›</button>
+        </div>
+        <div class="ct-grid" id="ct-cards"></div>
+        <div class="patrimonio-bar" id="patrimonio-bar"></div>
+      </div>
+
+      <!-- ════ INVERSIONES ════ -->
+      <div class="view" id="view-inversiones">
+        <div class="flex justify-between items-center flex-wrap gap-8" style="margin-bottom:16px">
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0;flex:1" id="inv-kpis"></div>
+          <button class="btn btn-primary" onclick="showModalInversion()">+ Nueva inversión</button>
+        </div>
+        <div id="inv-list"></div>
+      </div>
+
+      <!-- Modal Cuenta -->
+      <div id="modal-cuenta" class="modal-backdrop hidden">
+        <div class="modal-box">
+          <div class="modal-title">Nueva cuenta bancaria <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-cuenta')">✕</button></div>
+          <div class="form-grid">
+            <div class="field field-full"><label>Nombre de la cuenta</label><input type="text" id="mc-nombre" placeholder="Ej: Nómina Bancolombia"></div>
+            <div class="field"><label>Tipo</label><select id="mc-tipo"><option>Debito</option><option>Credito</option><option>Efectivo</option><option>Ahorro</option></select></div>
+            <div class="field"><label>Banco</label><input type="text" id="mc-banco" placeholder="Bancolombia"></div>
+            <div class="field"><label>Saldo inicial ($)</label><input type="text" id="mc-saldo" placeholder="0" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"></div>
+            <div class="field"><label>Límite crédito ($)</label><input type="text" id="mc-limite" placeholder="0" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"></div>
+          </div>
+          <div style="margin-top:16px;font-weight:600;font-size:13px;margin-bottom:8px">Bolsillos (opcional)</div>
+          <div id="mc-bolsillos"></div>
+          <button class="btn btn-ghost btn-sm" onclick="addBolsilloInput()" style="margin-bottom:16px">+ Agregar bolsillo</button>
+          <div class="flex gap-8">
+            <button class="btn btn-primary w-full" onclick="guardarCuenta()">Guardar cuenta</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Bolsillo -->
+      <div id="modal-bolsillo" class="modal-backdrop hidden">
+        <div class="modal-box">
+          <div class="modal-title">Nuevo bolsillo <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-bolsillo')">✕</button></div>
+          <div class="form-grid">
+            <div class="field field-full"><label>Nombre del bolsillo</label><input type="text" id="mb-nombre" placeholder="Ej: Ahorro emergencia"></div>
+            <div class="field field-full"><label>Saldo inicial ($)</label><input type="text" id="mb-saldo" placeholder="0" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"></div>
+          </div>
+          <input type="hidden" id="mb-cuenta-id">
+          <button class="btn btn-primary w-full" style="margin-top:16px" onclick="guardarBolsillo()">Guardar bolsillo</button>
+        </div>
+      </div>
+
+      <!-- Modal Movimiento Cuenta -->
+      <div id="modal-mov-cuenta" class="modal-backdrop hidden">
+        <div class="modal-box">
+          <div class="modal-title" id="mmc-title">Registrar movimiento <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-mov-cuenta')">✕</button></div>
+          <div class="form-grid">
+            <div class="field"><label>Tipo</label><select id="mmc-tipo"><option value="ingreso">Ingreso</option><option value="egreso">Egreso</option><option value="transferencia">Transferencia</option></select></div>
+            <div class="field"><label>Monto ($)</label><input type="text" id="mmc-monto" placeholder="0" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"></div>
+            <div class="field field-full"><label>Concepto</label><input type="text" id="mmc-concepto" placeholder="Descripción del movimiento"></div>
+            <div class="field"><label>Fecha</label><input type="date" id="mmc-fecha"></div>
+            <div class="field"><label>Bolsillo</label><select id="mmc-bolsillo"></select></div>
+          </div>
+          <input type="hidden" id="mmc-cuenta-id">
+          <button class="btn btn-primary w-full" style="margin-top:16px" onclick="guardarMovCuenta()">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Modal Inversión -->
+      <div id="modal-inversion" class="modal-backdrop hidden">
+        <div class="modal-box">
+          <div class="modal-title">Nueva inversión <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-inversion')">✕</button></div>
+          <div class="form-grid">
+            <div class="field field-full"><label>Nombre</label><input type="text" id="mi-nombre" placeholder="Ej: Nubank CDT Digital"></div>
+            <div class="field"><label>Plataforma</label><input type="text" id="mi-plataforma" placeholder="Nubank, Trueque, etc."></div>
+            <div class="field"><label>Tipo</label><select id="mi-tipo"><option>CDT</option><option>Acciones</option><option>Cripto</option><option>Fondo</option><option>ETF</option><option>Otro</option></select></div>
+            <div class="field"><label>Saldo inicial ($)</label><input type="text" id="mi-saldo" placeholder="0" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"></div>
+            <div class="field"><label>Fecha inicio</label><input type="date" id="mi-fecha"></div>
+          </div>
+          <button class="btn btn-primary w-full" style="margin-top:16px" onclick="guardarInversion()">Crear inversión</button>
+        </div>
+      </div>
+
+      <!-- Modal Movimiento Inversión -->
+      <div id="modal-mov-inv" class="modal-backdrop hidden">
+        <div class="modal-box">
+          <div class="modal-title" id="mmi-title">Registrar movimiento <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-mov-inv')">✕</button></div>
+          <div class="form-grid">
+            <div class="field"><label>Tipo</label>
+              <select id="mmi-tipo">
+                <option value="deposito">Depósito</option>
+                <option value="retiro">Retiro</option>
+                <option value="rendimiento">Rendimiento</option>
+              </select>
+            </div>
+            <div class="field"><label>Monto ($)</label><input type="text" id="mmi-monto" placeholder="0" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"></div>
+            <div class="field"><label>Fecha</label><input type="date" id="mmi-fecha"></div>
+            <div class="field field-full"><label>Notas</label><input type="text" id="mmi-notas" placeholder="Descripción opcional"></div>
+          </div>
+          <input type="hidden" id="mmi-inv-id">
+          <button class="btn btn-primary w-full" style="margin-top:16px" onclick="guardarMovInversion()">Guardar</button>
         </div>
       </div>
 
@@ -768,6 +1053,10 @@ function showAlert(el,msg,type) {
 // ══════════════════════════════════════════
 const PAGE_META = {
   'sheets-config': {title:"Google Sheets",sub:"Sincronización entre dispositivos"},
+  'cuentas':      {title:"Cuentas bancarias",sub:"Saldos, bolsillos y cuenta T por cuenta"},
+  'inversiones':  {title:"Inversiones digitales",sub:"Portafolio de inversiones y rendimientos"},
+  'cuentas':      {title:"Cuentas bancarias",sub:"Saldos, bolsillos y cuenta T"},
+  'inversiones':  {title:"Inversiones",sub:"Portafolio de inversiones digitales"},
   dashboard:  {title:"Dashboard",        sub:"Visión general de tus finanzas"},
   registrar:  {title:"Registrar movimiento", sub:"Ingresa un nuevo gasto o ingreso"},
   historial:  {title:"Historial",         sub:"Todos tus movimientos"},
@@ -788,6 +1077,10 @@ function showView(v) {
   if(v==="presupuesto") renderPresupuesto();
   if(v==="config") renderConfig();
   if(v==="sheets-config") initSheetsConfig();
+  if(v==="cuentas")      initCuentas();
+  if(v==="inversiones")  initInversiones();
+  if(v==="cuentas")      renderCuentasView();
+  if(v==="inversiones")  renderInversionesView();
 }
 
 function switchDTab(btn) {
@@ -2149,6 +2442,488 @@ async function refreshApp() {
   }
 }
 
+
+// ══════════════════════════════════════════
+// CUENTAS BANCARIAS
+// ══════════════════════════════════════════
+let cuentasDB = []; // local cache {id, nombre, tipo, banco, saldo_inicial, limite, bolsillos:[{nombre,saldo}]}
+let invDB = [];     // local cache for inversiones
+let ctMonth = {...nowMonth()};
+
+function nowMonth(){const d=new Date();return{year:d.getFullYear(),month:d.getMonth()};}
+
+async function loadCuentasDB() {
+  try {
+    const rows = await sbGet("cuentas_saldos", "select=*&limit=5000");
+    // Rebuild cuentas from config + movements
+    cuentasDB = (DB.cuentas||[]).map(c => ({
+      ...c,
+      bolsillos: [],
+      movimientos: rows.filter(r=>r.cuenta===c.nombre)
+    }));
+  } catch(e){ console.error("loadCuentasDB:", e); }
+}
+
+async function loadInvDB() {
+  try {
+    const invs = await sbGet("inversiones", "select=*");
+    const movs = await sbGet("inversiones_movimientos", "select=*&limit=5000");
+    invDB = invs.map(inv => ({
+      ...inv,
+      movimientos: movs.filter(m=>m.inversion_id===inv.id)
+    }));
+  } catch(e){ console.error("loadInvDB:", e); }
+}
+
+async function renderCuentasView() {
+  await loadCuentasDB();
+  renderCuentasKPIs();
+  renderCuentasList();
+  setupCTMonthNav();
+  renderCTCards();
+}
+
+function renderCuentasKPIs() {
+  const now = new Date(), m=now.getMonth(), y=now.getFullYear();
+  const movs = DB.movimientos.filter(x=>x.mes===m&&x.anio===y);
+  const totalIng = movs.filter(x=>x.tipo==="Ingreso").reduce((s,x)=>s+x.monto,0);
+  const totalGas = movs.filter(x=>x.tipo==="Gasto").reduce((s,x)=>s+x.monto,0);
+  const neto = totalIng - totalGas;
+  document.getElementById("cuentas-kpis").innerHTML=`
+    <div class="kpi g"><div class="kpi-lbl">Ingresos mes</div><div class="kpi-val">${fmt(totalIng,true)}</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Egresos mes</div><div class="kpi-val">${fmt(totalGas,true)}</div></div>
+    <div class="kpi ${neto>=0?"b":"r"}"><div class="kpi-lbl">Flujo neto</div><div class="kpi-val">${fmt(neto,true)}</div></div>`;
+}
+
+function renderCuentasList() {
+  const el = document.getElementById("cuentas-list");
+  const movs = DB.movimientos;
+  el.innerHTML = (DB.cuentas||[]).map(c => {
+    const cMovs = movs.filter(m=>m.cuenta===c.nombre);
+    const ingresos = cMovs.filter(m=>m.tipo==="Ingreso");
+    const egresos  = cMovs.filter(m=>m.tipo==="Gasto");
+    const totalIng = ingresos.reduce((s,m)=>s+m.monto,0);
+    const totalEgr = egresos.reduce((s,m)=>s+m.monto,0);
+    const balance  = (c.saldo_inicial||0) + totalIng - totalEgr;
+    const isCredit = c.tipo==="Credito";
+    const pctUso   = c.limite>0 ? balance/c.limite : 0;
+    // Bolsillos from config
+    const bolsillos = (c.bolsillos||[]);
+
+    return `<div class="card" style="margin-bottom:12px">
+      <div class="flex justify-between items-center" style="padding:14px 16px;cursor:pointer" onclick="toggleCuenta('cuenta-body-${c.id}')">
+        <div>
+          <div style="font-weight:700;font-size:15px">${c.nombre}</div>
+          <div class="text-muted text-sm">${c.tipo} · ${c.banco||""}</div>
+        </div>
+        <div class="text-right">
+          <div class="font-bold" style="font-size:16px;color:${isCredit?"var(--red)":"var(--green)"}">${fmt(Math.abs(balance))}</div>
+          ${isCredit&&c.limite>0?`<div class="text-xs text-muted">${Math.round(pctUso*100)}% del límite</div>`:""}
+        </div>
+      </div>
+      <div id="cuenta-body-${c.id}" style="display:none">
+        ${bolsillos.length>0?`
+        <div class="bolsillos-wrap">
+          <div class="text-xs text-muted font-bold" style="margin-bottom:6px">BOLSILLOS</div>
+          ${bolsillos.map(b=>`<div class="bolsillo-row"><span class="text-muted">${b.nombre}</span><span class="font-bold">${fmt(b.saldo||0)}</span></div>`).join("")}
+          <div class="bolsillo-row"><button class="btn btn-ghost btn-sm" onclick="showModalBolsillo('${c.id}')">+ Bolsillo</button><span class="text-muted text-xs">sin asignar: ${fmt(balance - bolsillos.reduce((s,b)=>s+(b.saldo||0),0))}</span></div>
+        </div>`:""}
+        <div class="cuenta-t">
+          <div class="t-col">
+            <div class="t-col-label">INGRESOS</div>
+            ${ingresos.slice(0,4).map(m=>`<div class="t-row"><span>${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("")}
+            ${ingresos.length>4?`<div class="text-xs text-muted">+${ingresos.length-4} más</div>`:""}
+            <div class="t-total text-green"><span>Total</span><span>${fmt(totalIng)}</span></div>
+          </div>
+          <div class="t-col">
+            <div class="t-col-label">EGRESOS</div>
+            ${egresos.slice(0,4).map(m=>`<div class="t-row"><span>${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("")}
+            ${egresos.length>4?`<div class="text-xs text-muted">+${egresos.length-4} más</div>`:""}
+            <div class="t-total text-red"><span>Total</span><span>${fmt(totalEgr)}</span></div>
+          </div>
+        </div>
+        <div class="cuenta-balance">
+          <span class="text-muted">Balance</span>
+          <span class="font-bold" style="color:${balance>=0?"var(--green)":"var(--red)"}">${fmt(balance)}</span>
+        </div>
+        <div style="padding:8px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="showModalMovCuenta('${c.id}','${c.nombre}')">+ Movimiento</button>
+          <button class="btn btn-ghost btn-sm" onclick="showModalBolsillo('${c.id}')">+ Bolsillo</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("") || '<div class="empty"><div class="empty-icon">🏦</div><h3>Sin cuentas</h3><p>Agrega tu primera cuenta bancaria.</p></div>';
+}
+
+function toggleCuenta(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display==="none"?"block":"none";
+}
+
+function setupCTMonthNav() {
+  document.getElementById("ct-prev").onclick = ()=>{ ctMonth.month--; if(ctMonth.month<0){ctMonth.month=11;ctMonth.year--;} renderCTCards(); };
+  document.getElementById("ct-next").onclick = ()=>{ const n=nowMonth(); if(ctMonth.year===n.year&&ctMonth.month===n.month)return; ctMonth.month++; if(ctMonth.month>11){ctMonth.month=0;ctMonth.year++;} renderCTCards(); };
+  renderCTCards();
+}
+
+function renderCTCards() {
+  document.getElementById("ct-month-label").textContent = MONTHS[ctMonth.month]+" "+ctMonth.year;
+  const movs = DB.movimientos.filter(m=>m.mes===ctMonth.month&&m.anio===ctMonth.year);
+  const el = document.getElementById("ct-cards");
+  let totalActivos=0, totalDeudas=0;
+
+  el.innerHTML = (DB.cuentas||[]).map(c => {
+    const cMovs = movs.filter(m=>m.cuenta===c.nombre);
+    const ings  = cMovs.filter(m=>m.tipo==="Ingreso");
+    const egs   = cMovs.filter(m=>m.tipo==="Gasto");
+    const totalIng = ings.reduce((s,m)=>s+m.monto,0);
+    const totalEg  = egs.reduce((s,m)=>s+m.monto,0);
+    const bal = c.tipo==="Credito" ? totalEg-totalIng : (c.saldo_inicial||0)+totalIng-totalEg;
+    if(c.tipo==="Credito") totalDeudas+=bal; else totalActivos+=bal;
+
+    const ingRows = ings.slice(0,3).map(m=>`<div class="ct-card-item"><span>${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("");
+    const egRows  = egs.slice(0,3).map(m=>`<div class="ct-card-item"><span>${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("");
+
+    return `<div class="ct-card">
+      <div class="ct-card-header">
+        <div><div class="font-bold" style="font-size:13px">${c.nombre}</div><div class="text-xs text-muted">${c.tipo}${c.banco?" · "+c.banco:""}</div></div>
+        <div class="text-xs badge ${c.tipo==="Credito"?"badge-r":"badge-g"}">${c.tipo}</div>
+      </div>
+      <div class="ct-card-body">
+        <div class="ct-card-col">
+          <div class="ct-card-col-label">${c.tipo==="Credito"?"PAGOS":"INGRESOS"}</div>
+          ${ingRows||'<div class="ct-card-item text-muted">Sin movimientos</div>'}
+          <div class="ct-card-subtotal ${totalIng>0?"text-green":"text-muted"}"><span>Total</span><span>${fmt(totalIng)}</span></div>
+        </div>
+        <div class="ct-card-col">
+          <div class="ct-card-col-label">${c.tipo==="Credito"?"CARGOS":"EGRESOS"}</div>
+          ${egRows||'<div class="ct-card-item text-muted">Sin movimientos</div>'}
+          <div class="ct-card-subtotal text-red"><span>Total</span><span>${fmt(totalEg)}</span></div>
+        </div>
+      </div>
+      <div class="ct-card-footer">
+        <span class="text-muted text-sm">${c.tipo==="Credito"?"Saldo deuda":"Balance"}</span>
+        <span class="font-bold" style="color:${c.tipo==="Credito"?bal>0?"var(--red)":"var(--green)":bal>=0?"var(--green)":"var(--red)"}">${fmt(Math.abs(bal))}</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  const neto = totalActivos - totalDeudas;
+  document.getElementById("patrimonio-bar").innerHTML=`
+    <div><div class="font-bold" style="font-size:14px">Patrimonio neto ${MONTHS[ctMonth.month]}</div><div class="text-xs text-muted">Activos − Deudas</div></div>
+    <div class="text-right">
+      <div class="font-bold" style="font-size:18px;color:${neto>=0?"var(--green)":"var(--red)"}">${fmt(neto)}</div>
+      <div class="text-xs text-muted">Activos: ${fmt(totalActivos,true)} · Deudas: ${fmt(totalDeudas,true)}</div>
+    </div>`;
+}
+
+// ── Modals Cuentas ────────────────────────────────────────────
+function showModalCuenta() { document.getElementById("modal-cuenta").classList.remove("hidden"); }
+function showModalBolsillo(cuentaId) {
+  document.getElementById("mb-cuenta-id").value = cuentaId;
+  document.getElementById("modal-bolsillo").classList.remove("hidden");
+}
+function showModalMovCuenta(cuentaId, cuentaNombre) {
+  document.getElementById("mmc-cuenta-id").value = cuentaId;
+  document.getElementById("mmc-title").innerHTML = `Movimiento en ${cuentaNombre} <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-mov-cuenta')">✕</button>`;
+  document.getElementById("mmc-fecha").value = isoToday();
+  // Populate bolsillos
+  const cuenta = (DB.cuentas||[]).find(c=>c.id===cuentaId);
+  const sel = document.getElementById("mmc-bolsillo");
+  sel.innerHTML = '<option value="">Cuenta general</option>';
+  (cuenta?.bolsillos||[]).forEach(b=>sel.add(new Option(b.nombre,b.nombre)));
+  document.getElementById("modal-mov-cuenta").classList.remove("hidden");
+}
+function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
+
+function addBolsilloInput() {
+  const wrap = document.getElementById("mc-bolsillos");
+  const idx = wrap.children.length;
+  const div = document.createElement("div");
+  div.className="flex gap-8 mt-8";
+  div.innerHTML=`<input type="text" placeholder="Nombre bolsillo" style="flex:2"><input type="text" placeholder="Saldo" style="flex:1" oninput="formatMontoInput(this)" onfocus="unformatMontoInput(this)" onblur="formatMontoInput(this)"><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+  wrap.appendChild(div);
+}
+
+async function guardarCuenta() {
+  const nombre = document.getElementById("mc-nombre").value.trim();
+  if (!nombre) { toast("Ingresa un nombre","err"); return; }
+  const bolsillosEls = document.getElementById("mc-bolsillos").children;
+  const bolsillos = Array.from(bolsillosEls).map(el=>{
+    const inputs = el.querySelectorAll("input");
+    return {nombre: inputs[0].value.trim(), saldo: parseMonto(inputs[1].dataset.raw||inputs[1].value)||0};
+  }).filter(b=>b.nombre);
+  const newCuenta = {
+    id:"ct"+Date.now().toString(36),
+    nombre,
+    tipo: document.getElementById("mc-tipo").value,
+    banco: document.getElementById("mc-banco").value.trim(),
+    saldo_inicial: parseMonto(document.getElementById("mc-saldo").dataset.raw||document.getElementById("mc-saldo").value)||0,
+    limite: parseMonto(document.getElementById("mc-limite").dataset.raw||document.getElementById("mc-limite").value)||0,
+    bolsillos
+  };
+  if (!DB.cuentas) DB.cuentas=[];
+  DB.cuentas.push(newCuenta);
+  save(); await saveConfig();
+  closeModal("modal-cuenta");
+  renderCuentasList();
+  toast("Cuenta guardada ✓");
+}
+
+async function guardarBolsillo() {
+  const nombre = document.getElementById("mb-nombre").value.trim();
+  const saldo  = parseMonto(document.getElementById("mb-saldo").dataset.raw||document.getElementById("mb-saldo").value)||0;
+  const cuentaId = document.getElementById("mb-cuenta-id").value;
+  if (!nombre) { toast("Ingresa un nombre","err"); return; }
+  const cuenta = (DB.cuentas||[]).find(c=>c.id===cuentaId);
+  if (!cuenta) return;
+  if (!cuenta.bolsillos) cuenta.bolsillos=[];
+  cuenta.bolsillos.push({nombre,saldo});
+  save(); await saveConfig();
+  closeModal("modal-bolsillo");
+  renderCuentasList();
+  toast("Bolsillo agregado ✓");
+}
+
+async function guardarMovCuenta() {
+  const monto = parseMonto(document.getElementById("mmc-monto").dataset.raw||document.getElementById("mmc-monto").value);
+  const tipo  = document.getElementById("mmc-tipo").value;
+  const concepto = document.getElementById("mmc-concepto").value.trim();
+  const fecha = document.getElementById("mmc-fecha").value;
+  const cuentaId = document.getElementById("mmc-cuenta-id").value;
+  const cuenta = (DB.cuentas||[]).find(c=>c.id===cuentaId);
+  if (!monto||!fecha) { toast("Completa todos los campos","err"); return; }
+  const d = new Date(fecha+"T12:00:00");
+  // Save as regular movement
+  const mov = {
+    fecha, tipo: tipo==="ingreso"?"Ingreso":"Gasto",
+    monto, descripcion: concepto||tipo,
+    categoria: tipo==="ingreso"?"💵 Ingreso":"📦 Imprevistos",
+    subcategoria: concepto||tipo, medio:"Transferencia Bancaria",
+    cuenta: cuenta?.nombre||"",
+    notas:"", mes:d.getMonth(), anio:d.getFullYear()
+  };
+  mov.id = Date.now().toString(36);
+  await saveMovToSupabase(mov);
+  DB.movimientos.unshift(mov);
+  save();
+  closeModal("modal-mov-cuenta");
+  renderCuentasList();
+  renderCTCards();
+  toast("Movimiento guardado ✓");
+}
+
+// ══════════════════════════════════════════
+// INVERSIONES
+// ══════════════════════════════════════════
+async function renderInversionesView() {
+  await loadInvDB();
+  renderInvKPIs();
+  renderInvList();
+}
+
+function renderInvKPIs() {
+  const total = invDB.reduce((s,inv)=>s+calcSaldoInv(inv),0);
+  const rendimientos = invDB.reduce((s,inv)=>s+(inv.movimientos||[]).filter(m=>m.tipo==="rendimiento").reduce((a,m)=>a+m.monto,0),0);
+  const depositos = invDB.reduce((s,inv)=>s+(inv.movimientos||[]).filter(m=>m.tipo==="deposito").reduce((a,m)=>a+m.monto,0),0)
+    + invDB.reduce((s,inv)=>s+(inv.saldo_inicial||0),0);
+  document.getElementById("inv-kpis").innerHTML=`
+    <div class="kpi b"><div class="kpi-lbl">Portafolio total</div><div class="kpi-val">${fmt(total,true)}</div></div>
+    <div class="kpi g"><div class="kpi-lbl">Rendimientos</div><div class="kpi-val">${fmt(rendimientos,true)}</div></div>
+    <div class="kpi p"><div class="kpi-lbl">Inversiones activas</div><div class="kpi-val">${invDB.filter(i=>i.estado!=="Cerrada").length}</div></div>`;
+}
+
+function calcSaldoInv(inv) {
+  const movs = inv.movimientos||[];
+  const deps = movs.filter(m=>m.tipo==="deposito").reduce((s,m)=>s+m.monto,0);
+  const rets = movs.filter(m=>m.tipo==="retiro").reduce((s,m)=>s+m.monto,0);
+  const rend = movs.filter(m=>m.tipo==="rendimiento").reduce((s,m)=>s+m.monto,0);
+  return (inv.saldo_inicial||0) + deps - rets + rend;
+}
+
+function renderInvList() {
+  const el = document.getElementById("inv-list");
+  if (!invDB.length) {
+    el.innerHTML='<div class="empty"><div class="empty-icon">📈</div><h3>Sin inversiones</h3><p>Agrega tu primera inversión digital.</p></div>';
+    return;
+  }
+  el.innerHTML = invDB.map(inv => {
+    const saldo = calcSaldoInv(inv);
+    const deps  = (inv.movimientos||[]).filter(m=>m.tipo==="deposito").reduce((s,m)=>s+m.monto,0);
+    const rets  = (inv.movimientos||[]).filter(m=>m.tipo==="retiro").reduce((s,m)=>s+m.monto,0);
+    const rend  = (inv.movimientos||[]).filter(m=>m.tipo==="rendimiento").reduce((s,m)=>s+m.monto,0);
+    const rentab = (inv.saldo_inicial||0)+deps > 0 ? rend/((inv.saldo_inicial||0)+deps)*100 : 0;
+    const historial = (inv.movimientos||[]).slice(-5).reverse();
+    return `<div class="card" style="margin-bottom:12px">
+      <div class="flex justify-between items-center" style="padding:14px 16px">
+        <div>
+          <div style="font-weight:700;font-size:15px">${inv.nombre}</div>
+          <div class="text-muted text-sm">${inv.plataforma||""} · ${inv.tipo||""} · Inicio: ${fmtDate(inv.fecha_inicio||"")}</div>
+        </div>
+        <div class="flex gap-8 items-center">
+          <span class="badge ${inv.estado==="Cerrada"?"badge-r":"badge-g"}">${inv.estado||"Activa"}</span>
+          <span class="badge badge-b">${inv.tipo||""}</span>
+        </div>
+      </div>
+      <div class="inv-stats-grid">
+        <div class="inv-stat"><div class="inv-stat-label">Saldo inicial</div><div class="inv-stat-val">${fmt(inv.saldo_inicial||0,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-label">Depósitos</div><div class="inv-stat-val text-green">+${fmt(deps,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-label">Rendimientos</div><div class="inv-stat-val ${rend>=0?"text-green":"text-red"}">${rend>=0?"+":""}${fmt(rend,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-label">Saldo actual</div><div class="inv-stat-val text-green">${fmt(saldo,true)}</div></div>
+      </div>
+      <div class="inv-actions-bar">
+        <button class="btn btn-ghost btn-sm" onclick="showModalMovInv('${inv.id}','deposito')">+ Depósito</button>
+        <button class="btn btn-ghost btn-sm" onclick="showModalMovInv('${inv.id}','retiro')">− Retiro</button>
+        <button class="btn btn-ghost btn-sm" onclick="showModalMovInv('${inv.id}','rendimiento')">📊 Rendimiento</button>
+        <span class="text-xs text-muted" style="margin-left:auto">Rentabilidad: <strong style="color:${rentab>=0?"var(--green)":"var(--red)"}">${rentab.toFixed(2)}%</strong></span>
+      </div>
+      ${historial.length?`<div style="border-top:1px solid var(--border);padding:10px 14px">
+        <div class="text-xs text-muted font-bold" style="margin-bottom:6px">ÚLTIMOS MOVIMIENTOS</div>
+        ${historial.map(m=>`<div class="t-row"><span>${m.tipo==="rendimiento"?"📊":m.tipo==="deposito"?"⬆":"⬇"} ${m.notas||m.tipo} · ${fmtDate(m.fecha)}</span><span class="${m.tipo==="retiro"?"text-red":"text-green"}">${m.tipo==="retiro"?"-":"+"}${fmt(m.monto,true)}</span></div>`).join("")}
+      </div>`:""}
+    </div>`;
+  }).join("");
+}
+
+function showModalInversion() {
+  document.getElementById("mi-fecha").value = isoToday();
+  document.getElementById("modal-inversion").classList.remove("hidden");
+}
+
+function showModalMovInv(invId, tipoDefault) {
+  document.getElementById("mmi-inv-id").value = invId;
+  document.getElementById("mmi-tipo").value = tipoDefault;
+  document.getElementById("mmi-fecha").value = isoToday();
+  document.getElementById("mmi-monto").value = "";
+  document.getElementById("mmi-notas").value = "";
+  const inv = invDB.find(i=>i.id===invId);
+  document.getElementById("mmi-title").innerHTML = `${inv?.nombre||"Inversión"} <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-mov-inv')">✕</button>`;
+  document.getElementById("modal-mov-inv").classList.remove("hidden");
+}
+
+async function guardarInversion() {
+  const nombre = document.getElementById("mi-nombre").value.trim();
+  if (!nombre) { toast("Ingresa un nombre","err"); return; }
+  const inv = {
+    id: "inv"+Date.now().toString(36),
+    nombre,
+    plataforma: document.getElementById("mi-plataforma").value.trim(),
+    tipo: document.getElementById("mi-tipo").value,
+    fecha_inicio: document.getElementById("mi-fecha").value,
+    saldo_inicial: parseMonto(document.getElementById("mi-saldo").dataset.raw||document.getElementById("mi-saldo").value)||0,
+    estado: "Activa"
+  };
+  try {
+    await sbPost("inversiones", inv);
+    invDB.push({...inv, movimientos:[]});
+    closeModal("modal-inversion");
+    renderInvList();
+    renderInvKPIs();
+    toast("Inversión creada ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+async function guardarMovInversion() {
+  const monto  = parseMonto(document.getElementById("mmi-monto").dataset.raw||document.getElementById("mmi-monto").value);
+  const tipo   = document.getElementById("mmi-tipo").value;
+  const fecha  = document.getElementById("mmi-fecha").value;
+  const notas  = document.getElementById("mmi-notas").value.trim();
+  const invId  = document.getElementById("mmi-inv-id").value;
+  if (!monto||!fecha) { toast("Completa los campos","err"); return; }
+  const d = new Date(fecha+"T12:00:00");
+  const mov = {
+    id: "im"+Date.now().toString(36),
+    inversion_id: invId, fecha, tipo, monto, notas,
+    mes: d.getMonth(), anio: d.getFullYear()
+  };
+  try {
+    await sbPost("inversiones_movimientos", mov);
+    const inv = invDB.find(i=>i.id===invId);
+    if (inv) { if(!inv.movimientos)inv.movimientos=[]; inv.movimientos.push(mov); }
+    closeModal("modal-mov-inv");
+    renderInvList();
+    renderInvKPIs();
+    toast("Movimiento guardado ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD MEJORAS
+// ══════════════════════════════════════════
+// Override renderCatTab to add expand on click
+const _origRenderCatTab = typeof renderCatTab !== "undefined" ? renderCatTab : null;
+
+function renderCatTabEnhanced() {
+  const y=+document.getElementById("d-anio").value;
+  const mVal=document.getElementById("d-mes").value;
+  const m=mVal===""?null:+mVal;
+  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto");
+  const cats=DB.categorias.filter(c=>!c.nombre.includes("💵"));
+  const labels=[],budgets=[],reals=[];
+  cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
+
+  // Table with expand
+  document.getElementById("d-cat-table").innerHTML=`<div class="tbl-wrap"><table>
+    <thead><tr><th>Categoría</th><th class="text-right">Presupuesto</th><th class="text-right">Real</th><th class="text-right">Diferencia</th><th class="text-right" style="min-width:160px">Ejecución</th></tr></thead>
+    <tbody>
+    ${cats.map((c,i)=>{
+      const b=budgets[i],r=reals[i],p=b>0?r/b:0;
+      const cls=p>=1?"text-red":p>=.8?"text-gold":"text-green";
+      const catMovs=movs.filter(mv=>mv.categoria===c.nombre);
+      return `<tr style="cursor:pointer" onclick="toggleCatExpand('catexp-${c.id}',this)">
+        <td>${c.nombre} <span style="color:var(--text3);font-size:11px">▶</span></td>
+        <td class="text-right font-mono">${fmt(b)}</td>
+        <td class="text-right font-mono">${fmt(r)}</td>
+        <td class="text-right font-mono ${cls}">${fmt(b-r)}</td>
+        <td class="text-right"><div style="display:flex;align-items:center;gap:8px"><div class="prog" style="flex:1"><div class="prog-fill ${p>=1?"prog-over":p>=.8?"prog-warn":"prog-ok"}" style="width:${Math.min(p*100,100)}%"></div></div><span class="${cls} text-xs" style="width:36px">${fmtP(p)}</span></div></td>
+      </tr>
+      <tr id="catexp-${c.id}" style="display:none">
+        <td colspan="5" style="padding:0">
+          <div class="cat-expand-movs">
+            ${catMovs.length===0?'<div class="cat-expand-row text-muted">Sin movimientos en este período</div>':
+              catMovs.sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,10).map(m=>`
+                <div class="cat-expand-row">
+                  <span>${getMedioIcon(m.medio)} ${m.descripcion||m.subcategoria}</span>
+                  <span class="text-muted text-xs">${m.subcategoria}</span>
+                  <span class="text-muted text-xs">${fmtDate(m.fecha)}</span>
+                  <span class="text-red font-bold">${fmt(m.monto)}</span>
+                </div>`).join("")}
+            ${catMovs.length>10?`<div class="cat-expand-row text-muted text-xs">...y ${catMovs.length-10} más. Ver en Historial.</div>`:""}
+          </div>
+        </td>
+      </tr>`;
+    }).join("")}
+    </tbody></table></div>`;
+
+  // Also render chart
+  mkChart("c-cats",{type:"bar",data:{labels,datasets:[
+    {label:"Presupuesto",data:budgets,backgroundColor:"rgba(61,142,240,.5)",borderRadius:4},
+    {label:"Real",data:reals,backgroundColor:reals.map((r,i)=>r>budgets[i]?"rgba(231,76,60,.8)":"rgba(46,204,113,.8)"),borderRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",
+    plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${fmt(ctx.raw,true)}`}}},
+    scales:{x:{ticks:{callback:v=>fmt(v,true)},grid:{color:"#1E2737"}},y:{grid:{display:false}}}}});
+}
+
+function toggleCatExpand(id, row) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isOpen = el.style.display !== "none";
+  el.style.display = isOpen ? "none" : "table-row";
+  const arrow = row.querySelector("span[style*='color:var(--text3)']");
+  if (arrow) arrow.textContent = isOpen ? "▶" : "▼";
+}
+
+// Patch renderCatTab to use enhanced version
+function renderCatTab() { renderCatTabEnhanced(); }
+
+// ── Utils ─────────────────────────────────────────────────────
+function filterMovs(y, m) {
+  let r = DB.movimientos||[];
+  if (y) r = r.filter(x=>x.anio==y);
+  if (m!==undefined&&m!=="") r = r.filter(x=>x.mes==m);
+  return r;
+}
+
 function toggleMobileNav() {
   const nav = document.getElementById("mobile-nav");
   const overlay = document.getElementById("mobile-nav-overlay");
@@ -2171,3 +2946,505 @@ loadDB().then(() => {
 </script>
 </body>
 </html>
+<script>
+// ══════════════════════════════════════════════════════════════
+// MODULE 1: CUENTAS BANCARIAS CON BOLSILLOS
+// ══════════════════════════════════════════════════════════════
+let ctaMes, ctaAnio, ctaBolsillosOpen = {};
+let ctaSaldosDB = [];
+
+async function initCuentas() {
+  const now = new Date();
+  const selM = document.getElementById("cta-mes");
+  const selA = document.getElementById("cta-anio");
+  if (!selM.options.length) {
+    MONTHS.forEach((m,i) => selM.add(new Option(m,i)));
+    selM.value = now.getMonth();
+    const years = [...new Set(DB.movimientos.map(m=>m.anio))];
+    if (!years.includes(now.getFullYear())) years.push(now.getFullYear());
+    years.sort((a,b)=>b-a).forEach(y => selA.add(new Option(y,y)));
+    selA.value = now.getFullYear();
+  }
+  selM.onchange = renderCuentas;
+  selA.onchange = renderCuentas;
+
+  // Load saldos from Supabase
+  try {
+    ctaSaldosDB = await sbGet("cuentas_saldos","select=*&limit=1000") || [];
+  } catch(e) { ctaSaldosDB = []; }
+
+  renderCuentas();
+}
+
+function renderCuentas() {
+  const mes  = +document.getElementById("cta-mes").value;
+  const anio = +document.getElementById("cta-anio").value;
+  const movs = DB.movimientos.filter(m=>m.mes===mes&&m.anio===anio);
+
+  // KPIs
+  const totalIng = movs.filter(m=>m.tipo==="Ingreso").reduce((s,m)=>s+m.monto,0);
+  const totalGas = movs.filter(m=>m.tipo==="Gasto").reduce((s,m)=>s+m.monto,0);
+  const neto = totalIng - totalGas;
+  document.getElementById("cta-kpis").innerHTML = `
+    <div class="kpi g"><div class="kpi-lbl">Ingresos ${MONTHS[mes]}</div><div class="kpi-val">${fmt(totalIng,true)}</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Gastos ${MONTHS[mes]}</div><div class="kpi-val">${fmt(totalGas,true)}</div></div>
+    <div class="kpi ${neto>=0?"b":"r"}"><div class="kpi-lbl">Flujo neto</div><div class="kpi-val">${fmt(neto,true)}</div></div>
+    <div class="kpi t"><div class="kpi-lbl">Cuentas activas</div><div class="kpi-val">${DB.cuentas.length}</div></div>`;
+
+  // Cuenta cards
+  const list = document.getElementById("cta-list");
+  list.innerHTML = DB.cuentas.map(c => {
+    const cMovsIng = movs.filter(m=>m.tipo==="Ingreso"&&m.cuenta===c.nombre);
+    const cMovsGas = movs.filter(m=>m.tipo==="Gasto"&&m.cuenta===c.nombre);
+    const ing  = cMovsIng.reduce((s,m)=>s+m.monto,0);
+    const gas  = cMovsGas.reduce((s,m)=>s+m.monto,0);
+    const bal  = ing - gas;
+    const isOpen = ctaBolsillosOpen[c.id];
+
+    // Get bolsillos for this account
+    const bolsillos = ctaSaldosDB.filter(b=>b.cuenta===c.nombre&&b.mes===mes&&b.anio===anio&&b.bolsillo);
+    const totalBolsillos = bolsillos.reduce((s,b)=>s+b.saldo,0);
+    const sinAsignar = bal - totalBolsillos;
+
+    const ingRows = cMovsIng.slice(0,3).map(m=>`<div class="cta-t-row"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("");
+    const gasRows = cMovsGas.slice(0,3).map(m=>`<div class="cta-t-row"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("");
+
+    const tipoIcon = c.tipo==="Credito"?"💳":c.tipo==="Efectivo"?"💵":"🏦";
+
+    return `<div class="cta-card">
+      <div class="cta-card-hdr" onclick="toggleCta('${c.id}')">
+        <div class="cta-card-name">${tipoIcon} ${c.nombre} <span style="font-size:11px;color:var(--text2);font-weight:400">${c.tipo}</span></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="cta-card-saldo ${bal<0?"text-red":""}">${fmt(bal,true)}</span>
+          <span style="color:var(--text2)">${isOpen?"▾":"▶"}</span>
+        </div>
+      </div>
+      ${isOpen ? `
+      <div class="bolsillos-wrap">
+        <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:6px">BOLSILLOS</div>
+        ${bolsillos.map(b=>`
+          <div class="bolsillo-row">
+            <span class="text-muted">${b.bolsillo}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="text" value="${fmtInput(b.saldo)}" style="width:120px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:4px 8px;font-size:12px;text-align:right;outline:none"
+                onfocus="this.value=parseMonto(this.value)||0;this.select()"
+                onblur="saveBolsillo('${c.nombre}','${b.bolsillo}',${mes},${anio},this)">
+              <button onclick="deleteBolsillo('${b.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px" title="Eliminar">🗑</button>
+            </div>
+          </div>`).join("")}
+        <div class="bolsillo-row" style="border-bottom:none">
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="text" id="new-bolsillo-${c.id}" placeholder="Nombre del bolsillo..." style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:5px 8px;font-size:12px;outline:none;width:180px">
+            <button class="btn btn-ghost btn-sm" onclick="addBolsillo('${c.nombre}','${c.id}',${mes},${anio})">+ Agregar</button>
+          </div>
+          <span class="text-muted text-xs">${fmt(sinAsignar,true)} sin asignar</span>
+        </div>
+      </div>
+      <div class="cta-t-wrap">
+        <div class="cta-t-col">
+          <div class="cta-t-lbl">Ingresos</div>
+          ${ingRows||'<div class="cta-t-row" style="color:var(--text3)">Sin ingresos</div>'}
+          ${cMovsIng.length>3?`<div class="cta-t-row text-xs" style="color:var(--accent)">+${cMovsIng.length-3} más</div>`:""}
+          <div class="cta-t-total text-green"><span>Total</span><span>${fmt(ing)}</span></div>
+        </div>
+        <div class="cta-t-col">
+          <div class="cta-t-lbl">Egresos</div>
+          ${gasRows||'<div class="cta-t-row" style="color:var(--text3)">Sin egresos</div>'}
+          ${cMovsGas.length>3?`<div class="cta-t-row text-xs" style="color:var(--accent)">+${cMovsGas.length-3} más</div>`:""}
+          <div class="cta-t-total text-red"><span>Total</span><span>${fmt(gas)}</span></div>
+        </div>
+      </div>
+      <div class="cta-balance-bar">
+        <span class="text-muted text-sm">Balance neto ${MONTHS[mes]}</span>
+        <span class="${bal>=0?"text-green":"text-red"} font-bold" style="font-family:var(--font-d);font-size:15px">${fmt(bal)}</span>
+      </div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function toggleCta(id) {
+  ctaBolsillosOpen[id] = !ctaBolsillosOpen[id];
+  renderCuentas();
+}
+
+async function addBolsillo(cuentaNombre, cuentaId, mes, anio) {
+  const inp = document.getElementById(`new-bolsillo-${cuentaId}`);
+  const nombre = inp.value.trim();
+  if (!nombre) return;
+  const item = {
+    id: Date.now().toString(36),
+    cuenta: cuentaNombre,
+    bolsillo: nombre,
+    mes, anio, saldo: 0
+  };
+  try {
+    await sbPost("cuentas_saldos", item);
+    ctaSaldosDB.push(item);
+    inp.value = "";
+    renderCuentas();
+    toast("Bolsillo creado ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+async function saveBolsillo(cuenta, bolsillo, mes, anio, inp) {
+  const saldo = parseMonto(inp.value)||0;
+  inp.value = fmtInput(saldo);
+  const existing = ctaSaldosDB.find(b=>b.cuenta===cuenta&&b.bolsillo===bolsillo&&b.mes===mes&&b.anio===anio);
+  try {
+    if (existing) {
+      await sbPatch("cuentas_saldos",`id=eq.${existing.id}`,{saldo});
+      existing.saldo = saldo;
+    }
+    toast("Saldo guardado ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+async function deleteBolsillo(id) {
+  if (!confirm("¿Eliminar este bolsillo?")) return;
+  try {
+    await sbDelete("cuentas_saldos",`id=eq.${id}`);
+    ctaSaldosDB = ctaSaldosDB.filter(b=>b.id!==id);
+    renderCuentas();
+    toast("Bolsillo eliminado");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODULE 2: INVERSIONES DIGITALES
+// ══════════════════════════════════════════════════════════════
+let invDB = [], invMovsDB = [], currentInvId = null;
+
+async function initInversiones() {
+  try {
+    invDB     = await sbGet("inversiones","select=*&order=created_at.asc") || [];
+    invMovsDB = await sbGet("inversiones_movimientos","select=*&order=fecha.asc") || [];
+  } catch(e) { invDB=[]; invMovsDB=[]; }
+  renderInversiones();
+}
+
+function renderInversiones() {
+  // KPIs
+  const totalInv = invDB.reduce((s,inv)=>{
+    const movs = invMovsDB.filter(m=>m.inversion_id===inv.id);
+    return s + calcInvSaldo(inv, movs);
+  },0);
+  const totalRend = invMovsDB.filter(m=>m.tipo==="rendimiento").reduce((s,m)=>s+m.monto,0);
+  const totalDep  = invDB.reduce((s,i)=>s+i.saldo_inicial,0) + invMovsDB.filter(m=>m.tipo==="deposito").reduce((s,m)=>s+m.monto,0);
+
+  document.getElementById("inv-kpis").innerHTML=`
+    <div class="kpi b"><div class="kpi-lbl">Portafolio total</div><div class="kpi-val">${fmt(totalInv,true)}</div></div>
+    <div class="kpi g"><div class="kpi-lbl">Rendimientos</div><div class="kpi-val">${fmt(totalRend,true)}</div></div>
+    <div class="kpi o"><div class="kpi-lbl">Capital invertido</div><div class="kpi-val">${fmt(totalDep,true)}</div></div>
+    <div class="kpi p"><div class="kpi-lbl">Inversiones activas</div><div class="kpi-val">${invDB.filter(i=>i.activa).length}</div></div>`;
+
+  if (!invDB.length) {
+    document.getElementById("inv-list").innerHTML=`<div class="empty"><div class="empty-icon">📈</div><h3>Sin inversiones</h3><p>Crea tu primera inversión con el botón de arriba.</p></div>`;
+    return;
+  }
+
+  document.getElementById("inv-list").innerHTML = invDB.map(inv=>{
+    const movs   = invMovsDB.filter(m=>m.inversion_id===inv.id);
+    const saldo  = calcInvSaldo(inv, movs);
+    const rend   = movs.filter(m=>m.tipo==="rendimiento").reduce((s,m)=>s+m.monto,0);
+    const deps   = movs.filter(m=>m.tipo==="deposito").reduce((s,m)=>s+m.monto,0);
+    const rets   = movs.filter(m=>m.tipo==="retiro").reduce((s,m)=>s+m.monto,0);
+    const pctRend= (inv.saldo_inicial+deps)>0 ? rend/(inv.saldo_inicial+deps)*100 : 0;
+    const isOpen = ctaBolsillosOpen["inv_"+inv.id];
+
+    const tipoBadge = `<span class="inv-badge" style="background:rgba(61,142,240,.15);color:var(--accent)">${inv.tipo}</span>`;
+    const actBadge  = inv.activa
+      ? `<span class="inv-badge" style="background:var(--gbg);color:var(--green)">Activa</span>`
+      : `<span class="inv-badge" style="background:var(--rbg);color:var(--red)">Cerrada</span>`;
+
+    const histHTML = isOpen ? `
+      <div style="border-top:1px solid var(--border)">
+        <div style="padding:8px 14px;font-size:10px;color:var(--text3);font-weight:600;background:rgba(0,0,0,.15)">HISTORIAL DE MOVIMIENTOS</div>
+        ${movs.length ? movs.slice().reverse().map(m=>`
+          <div class="inv-hist-item">
+            <div><div style="font-size:13px;font-weight:500">${m.tipo==="deposito"?"💰 Depósito":m.tipo==="retiro"?"💸 Retiro":"📊 Rendimiento"}</div>
+            <div style="font-size:11px;color:var(--text2)">${fmtDate(m.fecha)}${m.notas?" · "+m.notas:""}</div></div>
+            <span class="${m.tipo==="retiro"?"text-red":m.tipo==="rendimiento"?"text-gold":"text-green"} font-bold">${m.tipo==="retiro"?"-":"+"}${fmt(m.monto,true)}</span>
+          </div>`).join("") : '<div style="padding:12px 14px;font-size:13px;color:var(--text3)">Sin movimientos aún</div>'}
+      </div>` : "";
+
+    return `<div class="inv-card">
+      <div class="inv-card-hdr">
+        <div>
+          <div class="inv-card-name">📈 ${inv.nombre}</div>
+          <div class="inv-card-sub">${inv.plataforma} · Inicio: ${fmtDate(inv.fecha_inicio)}</div>
+          <div style="display:flex;gap:5px;margin-top:6px">${tipoBadge}${actBadge}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-d);font-size:20px;font-weight:700;color:var(--green)">${fmt(saldo,true)}</div>
+          <div style="font-size:11px;color:${pctRend>=0?"var(--green)":"var(--red)"}">Rendimiento: ${pctRend>=0?"+":""}${pctRend.toFixed(1)}%</div>
+        </div>
+      </div>
+      <div class="inv-stats-row">
+        <div class="inv-stat"><div class="inv-stat-lbl">Capital inicial</div><div class="inv-stat-val">${fmt(inv.saldo_inicial,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-lbl">Depósitos</div><div class="inv-stat-val text-green">+${fmt(deps,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-lbl">Retiros</div><div class="inv-stat-val text-red">-${fmt(rets,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-lbl">Rendimientos</div><div class="inv-stat-val text-gold">+${fmt(rend,true)}</div></div>
+      </div>
+      <div class="inv-actions-row">
+        <button class="btn btn-ghost btn-sm" onclick="openInvMov('${inv.id}','${inv.nombre}','deposito')">+ Depósito</button>
+        <button class="btn btn-ghost btn-sm" onclick="openInvMov('${inv.id}','${inv.nombre}','retiro')">− Retiro</button>
+        <button class="btn btn-ghost btn-sm" onclick="openInvMov('${inv.id}','${inv.nombre}','rendimiento')">📊 Rendimiento</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleInvHist('${inv.id}')">${isOpen?"▾ Ocultar":"▶ Historial"}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInversion('${inv.id}')">🗑</button>
+      </div>
+      ${histHTML}
+    </div>`;
+  }).join("");
+}
+
+function calcInvSaldo(inv, movs) {
+  let s = inv.saldo_inicial;
+  movs.forEach(m=>{
+    if (m.tipo==="deposito"||m.tipo==="rendimiento") s+=m.monto;
+    if (m.tipo==="retiro") s-=m.monto;
+  });
+  return s;
+}
+
+function toggleInvHist(id) {
+  ctaBolsillosOpen["inv_"+id] = !ctaBolsillosOpen["inv_"+id];
+  renderInversiones();
+}
+
+function showInvModal() {
+  document.getElementById("inv-fecha-ini").value = today();
+  document.getElementById("inv-modal").style.display="flex";
+}
+function closeInvModal() { document.getElementById("inv-modal").style.display="none"; }
+
+async function saveInversion() {
+  const nombre   = document.getElementById("inv-nombre").value.trim();
+  const plat     = document.getElementById("inv-plataforma").value.trim();
+  const tipo     = document.getElementById("inv-tipo").value;
+  const saldoIni = parseMonto(document.getElementById("inv-saldo-ini").value)||0;
+  const fecha    = document.getElementById("inv-fecha-ini").value;
+  if (!nombre) { toast("Ingresa un nombre","err"); return; }
+  const inv = { id:Date.now().toString(36), nombre, plataforma:plat, tipo, saldo_inicial:saldoIni, fecha_inicio:fecha, activa:true };
+  try {
+    await sbPost("inversiones", inv);
+    invDB.push(inv);
+    closeInvModal();
+    renderInversiones();
+    toast("Inversión creada ✓");
+    document.getElementById("inv-nombre").value="";
+    document.getElementById("inv-plataforma").value="";
+    document.getElementById("inv-saldo-ini").value="";
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+function openInvMov(invId, invNombre, tipo) {
+  currentInvId = invId;
+  document.getElementById("inv-mov-title").textContent = tipo==="deposito"?"Registrar depósito":tipo==="retiro"?"Registrar retiro":"Registrar rendimiento";
+  document.getElementById("inv-mov-sub").textContent = invNombre;
+  document.getElementById("inv-mov-tipo").value = tipo;
+  document.getElementById("inv-mov-fecha").value = today();
+  document.getElementById("inv-mov-monto").value = "";
+  document.getElementById("inv-mov-notas").value = "";
+  document.getElementById("inv-mov-modal").style.display="flex";
+}
+function closeInvMovModal() { document.getElementById("inv-mov-modal").style.display="none"; }
+
+async function saveInvMovimiento() {
+  const tipo  = document.getElementById("inv-mov-tipo").value;
+  const monto = parseMonto(document.getElementById("inv-mov-monto").value)||0;
+  const fecha = document.getElementById("inv-mov-fecha").value;
+  const notas = document.getElementById("inv-mov-notas").value.trim();
+  if (!monto) { toast("Ingresa un monto","err"); return; }
+  const mov = { id:Date.now().toString(36), inversion_id:currentInvId, tipo, monto, fecha, notas };
+  try {
+    await sbPost("inversiones_movimientos", mov);
+    invMovsDB.push(mov);
+    closeInvMovModal();
+    renderInversiones();
+    toast("Movimiento guardado ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+async function deleteInversion(id) {
+  if (!confirm("¿Eliminar esta inversión y todos sus movimientos?")) return;
+  try {
+    await sbDelete("inversiones",`id=eq.${id}`);
+    await sbDelete("inversiones_movimientos",`inversion_id=eq.${id}`);
+    invDB = invDB.filter(i=>i.id!==id);
+    invMovsDB = invMovsDB.filter(m=>m.inversion_id!==id);
+    renderInversiones();
+    toast("Inversión eliminada");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODULE 3: DASHBOARD CATEGORIA EXPAND (patch renderCatTab)
+// ══════════════════════════════════════════════════════════════
+let catExpanded = {};
+
+const _origRenderCatTab = window.renderCatTab;
+window.renderCatTab = function() {
+  const y = +document.getElementById("d-anio").value;
+  const mVal = document.getElementById("d-mes").value;
+  const m = mVal===""?null:+mVal;
+  const movs = filterMovs(y, m===null?undefined:m).filter(x=>x.tipo==="Gasto");
+  const cats = DB.categorias.filter(c=>!c.nombre.includes("💵"));
+  const labels=[],budgets=[],reals=[];
+  cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
+
+  // Chart (same as before)
+  const ch=mkChart("c-cats",{type:"bar",data:{labels,datasets:[
+    {label:"Presupuesto",data:budgets,backgroundColor:"rgba(61,142,240,.5)",borderRadius:4},
+    {label:"Real",data:reals,backgroundColor:reals.map((r,i)=>r>budgets[i]?"rgba(231,76,60,.8)":"rgba(46,204,113,.8)"),borderRadius:4},
+  ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{position:"bottom",labels:{padding:16,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${fmt(ctx.raw,true)}`}}},scales:{x:{ticks:{callback:v=>fmt(v,true)},grid:{color:"#1E2737"}},y:{grid:{display:false}}},onClick:(e,els)=>{if(els.length)drillSubcat(cats[els[0].index],movs);}}});
+
+  // Table with expandable rows
+  const tableEl = document.getElementById("d-cat-table");
+  let html = `<div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>Categoría</th>
+      <th class="text-right">Presupuesto</th>
+      <th class="text-right">Real</th>
+      <th class="text-right">Diferencia</th>
+      <th class="text-right" style="min-width:160px">Ejecución</th>
+      <th></th>
+    </tr></thead><tbody>`;
+
+  cats.forEach((c,i)=>{
+    const b=budgets[i],r=reals[i],p=b>0?r/b:0;
+    const cls=p>=1?"text-red":p>=.8?"text-gold":"text-green";
+    const isOpen = catExpanded[c.id];
+    const catMovs = movs.filter(mv=>mv.categoria===c.nombre);
+
+    html += `<tr style="cursor:pointer" onclick="toggleCatExpand('${c.id}')">
+      <td style="font-weight:600">${c.nombre}</td>
+      <td class="text-right font-mono">${fmt(b)}</td>
+      <td class="text-right font-mono">${fmt(r)}</td>
+      <td class="text-right font-mono ${cls}">${fmt(b-r)}</td>
+      <td class="text-right">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="prog" style="flex:1"><div class="prog-fill ${p>=1?"prog-over":p>=.8?"prog-warn":"prog-ok"}" style="width:${Math.min(p*100,100)}%"></div></div>
+          <span class="${cls} text-xs" style="width:36px">${fmtP(p)}</span>
+        </div>
+      </td>
+      <td style="text-align:center;color:var(--text3)">${isOpen?"▾":"▶"}</td>
+    </tr>`;
+
+    if (isOpen) {
+      if (!catMovs.length) {
+        html += `<tr><td colspan="6" style="padding:10px 14px 10px 28px;background:rgba(0,0,0,.15);font-size:12px;color:var(--text3)">Sin movimientos en este período</td></tr>`;
+      } else {
+        catMovs.sort((a,b)=>b.fecha.localeCompare(a.fecha)).forEach(mv=>{
+          html += `<tr style="background:rgba(0,0,0,.12)">
+            <td style="padding-left:28px;font-size:12px;color:var(--text2)">${mv.descripcion||mv.subcategoria}</td>
+            <td colspan="2" class="text-xs text-muted">${mv.subcategoria} · ${fmtDate(mv.fecha)} · ${mv.medio}</td>
+            <td class="text-right text-xs text-muted">${mv.cuenta}</td>
+            <td class="text-right font-mono text-red font-bold" style="font-size:13px">-${fmt(mv.monto)}</td>
+            <td></td>
+          </tr>`;
+        });
+        html += `<tr style="background:rgba(0,0,0,.12)">
+          <td style="padding-left:28px" colspan="3" class="text-xs text-muted">${catMovs.length} movimientos</td>
+          <td colspan="2" class="text-right font-bold text-red font-mono">${fmt(r)}</td>
+          <td></td>
+        </tr>`;
+      }
+    }
+  });
+
+  html += `</tbody></table></div>`;
+  tableEl.innerHTML = html;
+};
+
+function toggleCatExpand(id) {
+  catExpanded[id] = !catExpanded[id];
+  renderCatTab();
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODULE 4: CUENTA T EN DASHBOARD (add to renderDashboard)
+// ══════════════════════════════════════════════════════════════
+const _origRenderDashboard = window.renderDashboard;
+window.renderDashboard = function() {
+  _origRenderDashboard();
+  // Add cuenta T section after existing content
+  setTimeout(()=>renderDashCuentaT(), 50);
+};
+
+function renderDashCuentaT() {
+  const y = +document.getElementById("d-anio").value;
+  const mVal = document.getElementById("d-mes").value;
+  const m = mVal===""?null:+mVal;
+  const movs = filterMovs(y, m===null?undefined:m);
+
+  // Find or create container
+  let container = document.getElementById("dash-cuenta-t-section");
+  if (!container) {
+    const dashWrap = document.querySelector("#tab-resumen");
+    if (!dashWrap) return;
+    container = document.createElement("div");
+    container.id = "dash-cuenta-t-section";
+    dashWrap.appendChild(container);
+  }
+
+  let html = `<div style="margin-top:24px">
+    <h3 class="section-title" style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Balance por cuenta — ${m!==null?MONTHS[m]+" "+y:"Año "+y}</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:12px">`;
+
+  DB.cuentas.forEach(c=>{
+    const cIng = movs.filter(mv=>mv.tipo==="Ingreso"&&mv.cuenta===c.nombre);
+    const cGas = movs.filter(mv=>mv.tipo==="Gasto"&&mv.cuenta===c.nombre);
+    const ing  = cIng.reduce((s,mv)=>s+mv.monto,0);
+    const gas  = cGas.reduce((s,mv)=>s+mv.monto,0);
+    const bal  = ing - gas;
+    if (!ing && !gas) return; // skip empty
+
+    const isCredito = c.tipo==="Credito";
+    const icon = isCredito?"💳":c.tipo==="Efectivo"?"💵":"🏦";
+
+    // Group by category for display
+    const topIng = Object.entries(cIng.reduce((acc,mv)=>{acc[mv.categoria||mv.descripcion]=(acc[mv.categoria||mv.descripcion]||0)+mv.monto;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,3);
+    const topGas = Object.entries(cGas.reduce((acc,mv)=>{acc[mv.categoria||mv.descripcion]=(acc[mv.categoria||mv.descripcion]||0)+mv.monto;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+    html += `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600;font-size:13px">${icon} ${c.nombre}</div>
+          <div style="font-size:11px;color:var(--text2)">${c.tipo}${c.banco?" · "+c.banco:""}</div>
+        </div>
+        ${isCredito&&c.limite?`<span style="font-size:10px;color:var(--text3)">Lím: ${fmt(c.limite,true)}</span>`:""}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:10px 12px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--text2);font-weight:600;margin-bottom:6px">${isCredito?"PAGOS":"INGRESOS"}</div>
+          ${topIng.map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px">${k}</span><span>${fmt(v,true)}</span></div>`).join("")||'<div style="font-size:11px;color:var(--text3)">Sin movimientos</div>'}
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--green);border-top:1px solid var(--border);padding-top:5px;margin-top:5px"><span>Total</span><span>${fmt(ing)}</span></div>
+        </div>
+        <div style="padding:10px 12px">
+          <div style="font-size:10px;color:var(--text2);font-weight:600;margin-bottom:6px">${isCredito?"CARGOS":"EGRESOS"}</div>
+          ${topGas.map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);padding:2px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100px">${k}</span><span>${fmt(v,true)}</span></div>`).join("")||'<div style="font-size:11px;color:var(--text3)">Sin movimientos</div>'}
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--red);border-top:1px solid var(--border);padding-top:5px;margin-top:5px"><span>Total</span><span>${fmt(gas)}</span></div>
+        </div>
+      </div>
+      <div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.15)">
+        <span style="font-size:12px;color:var(--text2)">${isCredito?"Saldo deuda":"Balance neto"}</span>
+        <span style="font-family:var(--font-d);font-size:15px;font-weight:700;color:${isCredito?(gas>0?"var(--red)":"var(--green)"):(bal>=0?"var(--green)":"var(--red)")}">${isCredito?fmt(gas):fmt(bal)}</span>
+      </div>
+    </div>`;
+  });
+
+  // Patrimonio neto
+  const totalActivos = movs.filter(mv=>mv.tipo==="Ingreso").reduce((s,mv)=>s+mv.monto,0);
+  const totalPasivos = movs.filter(mv=>mv.tipo==="Gasto").reduce((s,mv)=>s+mv.monto,0);
+  const patrimonio   = totalActivos - totalPasivos;
+
+  html += `</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-weight:600;font-size:14px">Flujo neto total del período</span>
+      <span style="font-family:var(--font-d);font-size:18px;font-weight:700;color:${patrimonio>=0?"var(--green)":"var(--red)"}">${fmt(patrimonio)}</span>
+    </div>
+  </div>`;
+
+  container.innerHTML = html;
+}
+</script>
