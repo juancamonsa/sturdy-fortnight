@@ -3090,6 +3090,25 @@ window.renderDashboard = function(){
 };
 
 // ══════════════════════════════════════════
+// MOBILE NAV
+// ══════════════════════════════════════════
+function toggleMobileNav() {
+  const nav = document.getElementById("mobile-nav");
+  const overlay = document.getElementById("mobile-nav-overlay");
+  if (!nav || !overlay) return;
+  const isOpen = nav.style.transform === "translateX(0px)" || nav.style.transform === "translateX(0)";
+  if (isOpen) {
+    nav.style.transform = "translateX(-100%)";
+    overlay.style.display = "none";
+    setTimeout(() => { nav.style.display = "none"; }, 250);
+  } else {
+    nav.style.display = "block";
+    overlay.style.display = "block";
+    setTimeout(() => { nav.style.transform = "translateX(0)"; }, 10);
+  }
+}
+
+// ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
 loadDB().then(() => {
