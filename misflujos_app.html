@@ -2924,8 +2924,10 @@ function renderCuentas() {
   if(!list)return;
   if(!DB.cuentas||!DB.cuentas.length){list.innerHTML='<div class="empty"><div class="empty-icon">🏦</div><h3>Sin cuentas</h3><p>Ve a Configuración para agregar tus cuentas.</p></div>';return;}
   list.innerHTML=DB.cuentas.map(c=>{
-    const cIng=movs.filter(m=>m.tipo==="Ingreso"&&m.cuenta===c.nombre);
-    const cGas=movs.filter(m=>m.tipo==="Gasto"&&m.cuenta===c.nombre);
+    // Ingresos reales + transferencias recibidas (cuenta_destino = esta cuenta en mov origen)
+    const cIng=movs.filter(m=>(m.tipo==="Ingreso"&&m.cuenta===c.nombre) || (m.tipo==="Transferencia"&&m.cuenta===c.nombre&&m.subcategoria?.startsWith("←")));
+    // Gastos reales + transferencias enviadas (tipo Transferencia saliendo de esta cuenta)
+    const cGas=movs.filter(m=>(m.tipo==="Gasto"&&m.cuenta===c.nombre) || (m.tipo==="Transferencia"&&m.cuenta===c.nombre&&m.subcategoria?.startsWith("→")));
     const ing=cIng.reduce((s,m)=>s+m.monto,0),gas=cGas.reduce((s,m)=>s+m.monto,0),bal=ing-gas;
     const isOpen=ctaBolsillosOpen[c.id];
     const bolsillos=ctaSaldosDB.filter(b=>b.cuenta===c.nombre&&b.mes===mes&&b.anio===anio&&b.bolsillo);
@@ -3105,8 +3107,8 @@ function renderDashCuentaT(){
   }
   let html=`<div style="margin-top:24px"><h3 style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Balance por cuenta — ${m!==null?MONTHS[m]+" "+y:"Año "+y}</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:12px">`;
   DB.cuentas.forEach(c=>{
-    const cIng=movs.filter(mv=>mv.tipo==="Ingreso"&&mv.cuenta===c.nombre);
-    const cGas=movs.filter(mv=>mv.tipo==="Gasto"&&mv.cuenta===c.nombre);
+    const cIng=movs.filter(mv=>(mv.tipo==="Ingreso"&&mv.cuenta===c.nombre) || (mv.tipo==="Transferencia"&&mv.cuenta===c.nombre&&mv.subcategoria?.startsWith("←")));
+    const cGas=movs.filter(mv=>(mv.tipo==="Gasto"&&mv.cuenta===c.nombre) || (mv.tipo==="Transferencia"&&mv.cuenta===c.nombre&&mv.subcategoria?.startsWith("→")));
     const ing=cIng.reduce((s,mv)=>s+mv.monto,0);
     const gas=cGas.reduce((s,mv)=>s+mv.monto,0);
     const bal=ing-gas;
