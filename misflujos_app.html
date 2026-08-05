@@ -313,16 +313,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 14h16M9 4v16"/></svg>
         Google Sheets
       </button>
-      <div class="nav-lbl" style="margin-top:8px">Finanzas</div>
-      <button class="nav-a" data-view="cuentas" onclick="showView('cuentas')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Cuentas
-      </button>
-      <button class="nav-a" data-view="inversiones" onclick="showView('inversiones')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-        Inversiones
-      </button>
-    </nav>
+          </nav>
     <div class="sidebar-footer">
       <div id="sync-status" style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
         <span id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0"></span>
@@ -640,8 +631,8 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
       <!-- ════ CUENTAS BANCARIAS ════ -->
       <div class="view" id="view-cuentas">
         <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px">
-          <select id="cta-mes" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 10px;font-size:13px;outline:none;appearance:none"></select>
-          <select id="cta-anio" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 10px;font-size:13px;outline:none;appearance:none"></select>
+          <select id="cta-mes" class="field" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 10px;font-size:13px;outline:none;appearance:none;min-width:130px"></select>
+          <select id="cta-anio" class="field" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 10px;font-size:13px;outline:none;appearance:none;min-width:90px"></select>
           <button class="btn btn-ghost" onclick="initCuentas()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-4.49"/></svg>
             Actualizar
@@ -656,7 +647,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 
         <!-- Cuenta T del mes -->
         <div style="margin-top:20px">
-          <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text2)">Balance por cuenta — {{mes actual}}</div>
+          <div id="cta-t-title" style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text2)">Balance por cuenta</div>
           <div id="cta-t-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px"></div>
         </div>
       </div>
@@ -2957,14 +2948,15 @@ async function initCuentas() {
   const now = new Date();
   const selM = document.getElementById("cta-mes");
   const selA = document.getElementById("cta-anio");
-  if (!selM.options.length) {
-    MONTHS.forEach((m,i) => selM.add(new Option(m,i)));
-    selM.value = now.getMonth();
-    const years = [...new Set(DB.movimientos.map(m=>m.anio))];
-    if (!years.includes(now.getFullYear())) years.push(now.getFullYear());
-    years.sort((a,b)=>b-a).forEach(y => selA.add(new Option(y,y)));
-    selA.value = now.getFullYear();
-  }
+  // Always rebuild selectors
+  selM.innerHTML = "";
+  selA.innerHTML = "";
+  MONTHS.forEach((m,i) => selM.add(new Option(m,i)));
+  selM.value = now.getMonth();
+  const years = [...new Set(DB.movimientos.map(m=>m.anio))];
+  if (!years.includes(now.getFullYear())) years.push(now.getFullYear());
+  years.sort((a,b)=>b-a).forEach(y => selA.add(new Option(y,y)));
+  selA.value = now.getFullYear();
   selM.onchange = renderCuentas;
   selA.onchange = renderCuentas;
 
@@ -2977,8 +2969,13 @@ async function initCuentas() {
 }
 
 function renderCuentas() {
-  const mes  = +document.getElementById("cta-mes").value;
-  const anio = +document.getElementById("cta-anio").value;
+  const mesEl  = document.getElementById("cta-mes");
+  const anioEl = document.getElementById("cta-anio");
+  if (!mesEl || !anioEl) return;
+  const mes  = +mesEl.value;
+  const anio = +anioEl.value;
+  const titleEl = document.getElementById("cta-t-title");
+  if (titleEl) titleEl.textContent = `Balance por cuenta — ${MONTHS[mes]} ${anio}`;
   const movs = DB.movimientos.filter(m=>m.mes===mes&&m.anio===anio);
 
   // KPIs
