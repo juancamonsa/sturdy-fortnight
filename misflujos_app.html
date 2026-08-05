@@ -464,6 +464,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
             <div class="tipo-toggle">
               <button class="tipo-btn r active" id="rb-gasto" onclick="setTipo('Gasto')">💸 Gasto</button>
               <button class="tipo-btn g" id="rb-ingreso" onclick="setTipo('Ingreso')">💵 Ingreso</button>
+              <button class="tipo-btn" id="rb-transferencia" onclick="setTipo('Transferencia')" style="color:var(--text2)">🔄 Transferencia</button>
             </div>
             <div class="monto-row">
               <span class="monto-sign" id="monto-sign">$</span>
@@ -477,7 +478,11 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
               <div class="field"><label>Categoría</label><select id="r-cat" onchange="buildSubSel()"></select></div>
               <div class="field"><label>Subcategoría</label><select id="r-sub"></select></div>
               <div class="field"><label>Medio de pago</label><select id="r-medio"></select></div>
-              <div class="field"><label>Cuenta / Tarjeta</label><select id="r-cuenta"></select></div>
+              <div class="field"><label id="r-cuenta-label">Cuenta / Tarjeta</label><select id="r-cuenta"></select></div>
+              <div class="field hidden" id="r-cuenta-destino-wrap">
+                <label>Cuenta destino</label>
+                <select id="r-cuenta-destino"></select>
+              </div>
               <div class="field field-full"><label>Notas</label><input type="text" id="r-notas" placeholder="Referencia, número de transacción..."></div>
             </div>
             <button class="btn btn-primary btn-lg w-full" style="margin-top:18px" onclick="guardar()">Guardar movimiento</button>
