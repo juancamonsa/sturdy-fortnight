@@ -656,56 +656,9 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
       <div class="view" id="view-inversiones">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div class="kpi-grid" id="inv-kpis" style="margin-bottom:0;flex:1"></div>
-          <button class="btn btn-primary" onclick="showInvModal()">+ Nueva inversión</button>
+          <button class="btn btn-primary btn-lg" onclick="showInvModal()" style="flex-shrink:0">+ Nueva inversión</button>
         </div>
         <div id="inv-list"></div>
-
-        <!-- Modal nueva inversión -->
-        <div id="inv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:16px">
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:440px;width:100%">
-            <div style="font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:16px">Nueva inversión</div>
-            <div class="form-grid">
-              <div class="field field-full"><label>Nombre</label><input type="text" id="inv-nombre" placeholder="Ej: Nubank CDT"></div>
-              <div class="field"><label>Plataforma</label><input type="text" id="inv-plataforma" placeholder="Nubank, Trueque..."></div>
-              <div class="field"><label>Tipo</label>
-                <select id="inv-tipo">
-                  <option>CDT</option><option>Acciones</option><option>Fondo</option>
-                  <option>Cripto</option><option>Bonos</option><option>Otro</option>
-                </select>
-              </div>
-              <div class="field"><label>Saldo inicial ($)</label><input type="text" id="inv-saldo-ini" placeholder="0" inputmode="decimal" onfocus="this.select()" onblur="this.value=fmtInput(parseMonto(this.value))"></div>
-              <div class="field"><label>Fecha inicio</label><input type="date" id="inv-fecha-ini"></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:16px">
-              <button class="btn btn-primary w-full" onclick="saveInversion()">Crear inversión</button>
-              <button class="btn btn-ghost" onclick="closeInvModal()">Cancelar</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal movimiento inversión -->
-        <div id="inv-mov-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:center;justify-content:center;padding:16px">
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:380px;width:100%">
-            <div style="font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:4px" id="inv-mov-title">Registrar movimiento</div>
-            <div style="font-size:12px;color:var(--text2);margin-bottom:16px" id="inv-mov-sub"></div>
-            <div class="form-grid">
-              <div class="field field-full"><label>Tipo</label>
-                <select id="inv-mov-tipo">
-                  <option value="deposito">Depósito</option>
-                  <option value="retiro">Retiro</option>
-                  <option value="rendimiento">Rendimiento</option>
-                </select>
-              </div>
-              <div class="field"><label>Monto ($)</label><input type="text" id="inv-mov-monto" placeholder="0" inputmode="decimal" onfocus="this.select()" onblur="this.value=fmtInput(parseMonto(this.value))"></div>
-              <div class="field"><label>Fecha</label><input type="date" id="inv-mov-fecha"></div>
-              <div class="field field-full"><label>Notas</label><input type="text" id="inv-mov-notas" placeholder="Opcional"></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:16px">
-              <button class="btn btn-primary w-full" onclick="saveInvMovimiento()">Guardar</button>
-              <button class="btn btn-ghost" onclick="closeInvMovModal()">Cancelar</button>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- ════ GOOGLE SHEETS CONFIG ════ -->
@@ -900,7 +853,54 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
   </div><!-- /main -->
 </div><!-- /app -->
 
-<div class="toast-c" id="toasts"></div>
+
+  <!-- Modals Inversiones -->
+  <div id="inv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;padding:16px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto">
+      <div style="font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:16px">Nueva inversión</div>
+      <div class="form-grid">
+        <div class="field field-full"><label>Nombre</label><input type="text" id="inv-nombre" placeholder="Ej: Nubank CDT"></div>
+        <div class="field"><label>Plataforma</label><input type="text" id="inv-plataforma" placeholder="Nubank, Trueque..."></div>
+        <div class="field"><label>Tipo</label>
+          <select id="inv-tipo">
+            <option>CDT</option><option>Acciones</option><option>Fondo</option>
+            <option>Cripto</option><option>Bonos</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>Saldo inicial ($)</label><input type="text" id="inv-saldo-ini" placeholder="0" inputmode="decimal" onfocus="this.select()" onblur="this.value=fmtInput(parseMonto(this.value))"></div>
+        <div class="field"><label>Fecha inicio</label><input type="date" id="inv-fecha-ini"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-primary w-full" onclick="saveInversion()">Crear inversión</button>
+        <button class="btn btn-ghost" onclick="closeInvModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="inv-mov-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;padding:16px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:380px;width:100%">
+      <div style="font-family:var(--font-d);font-size:17px;font-weight:700;margin-bottom:4px" id="inv-mov-title">Registrar movimiento</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:16px" id="inv-mov-sub"></div>
+      <div class="form-grid">
+        <div class="field field-full"><label>Tipo</label>
+          <select id="inv-mov-tipo">
+            <option value="deposito">Depósito</option>
+            <option value="retiro">Retiro</option>
+            <option value="rendimiento">Rendimiento</option>
+          </select>
+        </div>
+        <div class="field"><label>Monto ($)</label><input type="text" id="inv-mov-monto" placeholder="0" inputmode="decimal" onfocus="this.select()" onblur="this.value=fmtInput(parseMonto(this.value))"></div>
+        <div class="field"><label>Fecha</label><input type="date" id="inv-mov-fecha"></div>
+        <div class="field field-full"><label>Notas</label><input type="text" id="inv-mov-notas" placeholder="Opcional"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-primary w-full" onclick="saveInvMovimiento()">Guardar</button>
+        <button class="btn btn-ghost" onclick="closeInvMovModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-c" id="toasts"></div>
 
 <script>
 // ══════════════════════════════════════════
@@ -2955,6 +2955,7 @@ async function initCuentas() {
   selM.value = now.getMonth();
   const years = [...new Set(DB.movimientos.map(m=>m.anio))];
   if (!years.includes(now.getFullYear())) years.push(now.getFullYear());
+  if (!years.includes(now.getFullYear()-1)) years.push(now.getFullYear()-1);
   years.sort((a,b)=>b-a).forEach(y => selA.add(new Option(y,y)));
   selA.value = now.getFullYear();
   selM.onchange = renderCuentas;
@@ -2990,6 +2991,10 @@ function renderCuentas() {
 
   // Cuenta cards
   const list = document.getElementById("cta-list");
+  if (!DB.cuentas || !DB.cuentas.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🏦</div><h3>Sin cuentas configuradas</h3><p>Ve a Configuración para agregar tus cuentas.</p></div>';
+    return;
+  }
   list.innerHTML = DB.cuentas.map(c => {
     const cMovsIng = movs.filter(m=>m.tipo==="Ingreso"&&m.cuenta===c.nombre);
     const cMovsGas = movs.filter(m=>m.tipo==="Gasto"&&m.cuenta===c.nombre);
