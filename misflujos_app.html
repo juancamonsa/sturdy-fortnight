@@ -3015,8 +3015,15 @@ function renderDashCuentaT() {
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:12px">`;
 
   DB.cuentas.forEach(c=>{
-    const cIng = movs.filter(mv=>mv.tipo==="Ingreso"&&mv.cuenta===c.nombre);
-    const cGas = movs.filter(mv=>mv.tipo==="Gasto"&&mv.cuenta===c.nombre);
+    const cIng = movs.filter(mv=>
+      (mv.tipo==="Ingreso"&&mv.cuenta===c.nombre) ||
+      (mv.tipo==="Transferencia"&&mv.cuenta===c.nombre&&(mv.subcategoria||"").startsWith("←"))
+    );
+    const cGas = movs.filter(mv=>
+      (mv.tipo==="Gasto"&&mv.cuenta===c.nombre) ||
+      (mv.tipo==="Transferencia"&&mv.cuenta===c.nombre&&(mv.subcategoria||"").startsWith("→")) ||
+      (mv.tipo==="Egreso"&&mv.cuenta===c.nombre)
+    );
     const ing  = cIng.reduce((s,mv)=>s+mv.monto,0);
     const gas  = cGas.reduce((s,mv)=>s+mv.monto,0);
     const bal  = ing - gas;
@@ -3057,8 +3064,8 @@ function renderDashCuentaT() {
   });
 
   // Patrimonio neto
-  const totalActivos = movs.filter(mv=>mv.tipo==="Ingreso").reduce((s,mv)=>s+mv.monto,0);
-  const totalPasivos = movs.filter(mv=>mv.tipo==="Gasto").reduce((s,mv)=>s+mv.monto,0);
+  const totalActivos = movs.filter(mv=>mv.tipo==="Ingreso"&&mv.categoria!=="🔄 Transferencia").reduce((s,mv)=>s+mv.monto,0);
+  const totalPasivos = movs.filter(mv=>mv.tipo==="Gasto"&&mv.categoria!=="🔄 Transferencia"&&mv.categoria!=="🏧 Egreso").reduce((s,mv)=>s+mv.monto,0);
   const patrimonio   = totalActivos - totalPasivos;
 
   html += `</div>
