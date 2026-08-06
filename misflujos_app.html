@@ -1020,7 +1020,7 @@ function filterMovs(y, m) {
 }
 function catById(id) { return DB.categorias.find(c=>c.id===id); }
 function catBudget(id) { return Object.values(DB.presupuestos[id]||{}).reduce((a,b)=>a+b,0); }
-function catReal(movs, nombre) { return movs.filter(m=>m.tipo==="Gasto"&&m.categoria===nombre).reduce((s,m)=>s+m.monto,0); }
+function catReal(movs, nombre) { return movs.filter(m=>m.tipo==="Gasto"&&m.categoria===nombre&&m.categoria!=="🔄 Transferencia").reduce((s,m)=>s+m.monto,0); }
 function mkChart(id,cfg) {
   if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}
   Chart.defaults.color="#8A9BB5"; Chart.defaults.font.family="'Inter',sans-serif";
@@ -1318,6 +1318,21 @@ async function guardar() {
     await saveMovToSupabase(mov);
     DB.movimientos.unshift(mov);
     save();
+    // Si es transferencia, crear movimiento en cuenta destino
+    if (TIPO==="Transferencia" && mov.cuenta_destino) {
+      const movDest = {
+        ...mov,
+        id: Date.now().toString(36)+"_d",
+        tipo: "Transferencia",
+        cuenta: mov.cuenta_destino,
+        cuenta_destino: mov.cuenta,
+        descripcion: `Transf. desde ${mov.cuenta}`,
+        subcategoria: `← ${mov.cuenta}`
+      };
+      await saveMovToSupabase(movDest);
+      DB.movimientos.unshift(movDest);
+      save();
+    }
     showAlert(alertEl,"✓ Movimiento guardado correctamente","ok");
     document.getElementById("r-monto").value="";
     document.getElementById("r-desc").value="";
@@ -1346,7 +1361,7 @@ function renderRecientes() {
 
 function renderBudgetPreview() {
   const now=new Date(),m=now.getMonth(),y=now.getFullYear();
-  const movs=DB.movimientos.filter(x=>x.mes===m&&x.anio===y&&x.tipo==="Gasto");
+  const movs=DB.movimientos.filter(x=>x.mes===m&&x.anio===y&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
   const el=document.getElementById("r-budget-preview");
   el.innerHTML=DB.categorias.filter(c=>!c.nombre.includes("💵")).map(c=>{
     const b=catBudget(c.id),r=catReal(movs,c.nombre),p=b>0?r/b:0;
@@ -1509,7 +1524,7 @@ function renderPresupuesto() {
   const anio   = +document.getElementById("p-anio").value;
   const mes    = mesVal === "-1" ? null : +mesVal;
   const dispMes = mes !== null ? mes : new Date().getMonth();
-  const movs   = DB.movimientos.filter(x=>x.mes===dispMes&&x.anio===anio&&x.tipo==="Gasto");
+  const movs   = DB.movimientos.filter(x=>x.mes===dispMes&&x.anio===anio&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
 
   let gastos=0, ingresos=0;
   DB.categorias.forEach(c=>{
@@ -3011,6 +3026,150 @@ function renderDashCuentaT() {
 }
 
 
+// ══════════════════════════════════════════
+// CUENTAS BANCARIAS
+// ══════════════════════════════════════════
+let ctaSaldosDB = [], ctaBolsillosOpen = {};
+
+async function initCuentas() {
+  const now = new Date();
+  const selM = document.getElementById("cta-mes");
+  const selA = document.getElementById("cta-anio");
+  if (!selM || !selA) return;
+  selM.innerHTML = ""; selA.innerHTML = "";
+  MONTHS.forEach((m,i) => selM.add(new Option(m,i)));
+  selM.value = now.getMonth();
+  const years = [...new Set(DB.movimientos.map(m=>m.anio))];
+  if (!years.includes(now.getFullYear())) years.push(now.getFullYear());
+  if (!years.includes(now.getFullYear()-1)) years.push(now.getFullYear()-1);
+  years.sort((a,b)=>b-a).forEach(y => selA.add(new Option(y,y)));
+  selA.value = now.getFullYear();
+  selM.onchange = renderCuentas;
+  selA.onchange = renderCuentas;
+  try { ctaSaldosDB = await sbGet("cuentas_saldos","select=*&limit=1000") || []; }
+  catch(e) { ctaSaldosDB = []; }
+  renderCuentas();
+}
+
+function toggleCta(id) {
+  ctaBolsillosOpen[id] = !ctaBolsillosOpen[id];
+  renderCuentas();
+}
+
+async function saveBolsillo(cuenta, bolsillo, mes, anio, inp) {
+  const saldo = parseMonto(inp.value) || 0;
+  inp.value = fmtInput(saldo);
+  const existing = ctaSaldosDB.find(b=>b.cuenta===cuenta&&b.bolsillo===bolsillo&&b.mes===mes&&b.anio===anio);
+  try {
+    if (existing) { await sbPatch("cuentas_saldos",`id=eq.${existing.id}`,{saldo}); existing.saldo=saldo; }
+    toast("Guardado ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+async function deleteBolsillo(id) {
+  if (!confirm("¿Eliminar?")) return;
+  try {
+    await sbDelete("cuentas_saldos",`id=eq.${id}`);
+    ctaSaldosDB = ctaSaldosDB.filter(b=>b.id!==id);
+    renderCuentas(); toast("Eliminado");
+  } catch(e) { toast("Error","err"); }
+}
+
+// ══════════════════════════════════════════
+// INVERSIONES DIGITALES
+// ══════════════════════════════════════════
+let inversionesDB = [], invMovimientosDB = [], currentInversionId = null;
+
+async function initInversiones() {
+  try {
+    inversionesDB    = await sbGet("inversiones","select=*&limit=500") || [];
+    invMovimientosDB = await sbGet("inversiones_movimientos","select=*&limit=5000") || [];
+  } catch(e) { inversionesDB=[]; invMovimientosDB=[]; }
+  renderInversiones();
+}
+
+function showInvModal() {
+  document.getElementById("inv-fecha-ini").value = today();
+  document.getElementById("inv-modal").style.display = "flex";
+}
+function closeInvModal() { document.getElementById("inv-modal").style.display = "none"; }
+
+async function saveInversion() {
+  const nombre   = document.getElementById("inv-nombre").value.trim();
+  const plat     = document.getElementById("inv-plataforma").value.trim();
+  const tipo     = document.getElementById("inv-tipo").value;
+  const saldoIni = parseMonto(document.getElementById("inv-saldo-ini").value) || 0;
+  const fecha    = document.getElementById("inv-fecha-ini").value;
+  if (!nombre) { toast("Ingresa un nombre","err"); return; }
+  const inv = {id:Date.now().toString(36),nombre,plataforma:plat,tipo,saldo_inicial:saldoIni,fecha_inicio:fecha,activa:true};
+  try {
+    await sbPost("inversiones",inv);
+    inversionesDB.push(inv);
+    closeInvModal(); renderInversiones(); toast("Inversión creada ✓");
+    ["inv-nombre","inv-plataforma","inv-saldo-ini"].forEach(id=>document.getElementById(id).value="");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+function openInvMov(invId, invNombre, tipo) {
+  currentInversionId = invId;
+  const t = {deposito:"Registrar depósito",retiro:"Registrar retiro",rendimiento:"Registrar rendimiento"};
+  document.getElementById("inv-mov-title").textContent = t[tipo]||"Registrar movimiento";
+  document.getElementById("inv-mov-sub").textContent   = invNombre;
+  document.getElementById("inv-mov-tipo").value        = tipo;
+  document.getElementById("inv-mov-fecha").value       = today();
+  document.getElementById("inv-mov-monto").value       = "";
+  document.getElementById("inv-mov-notas").value       = "";
+  document.getElementById("inv-mov-modal").style.display = "flex";
+}
+function closeInvMovModal() { document.getElementById("inv-mov-modal").style.display = "none"; }
+
+async function saveInvMovimiento() {
+  const tipo  = document.getElementById("inv-mov-tipo").value;
+  const monto = parseMonto(document.getElementById("inv-mov-monto").value) || 0;
+  const fecha = document.getElementById("inv-mov-fecha").value;
+  const notas = document.getElementById("inv-mov-notas").value.trim();
+  if (!monto) { toast("Ingresa un monto","err"); return; }
+  const mov = {id:Date.now().toString(36),inversion_id:currentInversionId,tipo,monto,fecha,notas};
+  try {
+    await sbPost("inversiones_movimientos",mov);
+    invMovimientosDB.push(mov);
+    closeInvMovModal(); renderInversiones(); toast("Movimiento guardado ✓");
+  } catch(e) { toast("Error: "+e.message,"err"); }
+}
+
+async function deleteInversion(id) {
+  if (!confirm("¿Eliminar esta inversión?")) return;
+  try {
+    await sbDelete("inversiones",`id=eq.${id}`);
+    await sbDelete("inversiones_movimientos",`inversion_id=eq.${id}`);
+    inversionesDB    = inversionesDB.filter(i=>i.id!==id);
+    invMovimientosDB = invMovimientosDB.filter(m=>m.inversion_id!==id);
+    renderInversiones(); toast("Inversión eliminada");
+  } catch(e) { toast("Error","err"); }
+}
+
+// ══════════════════════════════════════════
+// MENÚ MÓVIL
+// ══════════════════════════════════════════
+function toggleMobileNav() {
+  const nav = document.getElementById("mobile-nav");
+  const overlay = document.getElementById("mobile-nav-overlay");
+  if (!nav || !overlay) return;
+  const isOpen = nav.style.transform === "translateX(0px)" || nav.style.transform === "translateX(0)";
+  if (isOpen) {
+    nav.style.transform = "translateX(-100%)";
+    overlay.style.display = "none";
+    setTimeout(() => nav.style.display="none", 250);
+  } else {
+    nav.style.display = "block";
+    overlay.style.display = "block";
+    setTimeout(() => nav.style.transform="translateX(0)", 10);
+  }
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
 loadDB().then(() => {
   showView("dashboard");
   initSync();
