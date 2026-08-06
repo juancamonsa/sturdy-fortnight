@@ -2952,78 +2952,7 @@ async function guardarMovInversion() {
 // DASHBOARD MEJORAS - categoria expand ya definido en renderCatTab arriba
 // ══════════════════════════════════════════
 // renderCatTab ya tiene toggleCatExpand integrado
-void(function() {
-  const y = +document.getElementById("d-anio").value;
-  const mVal = document.getElementById("d-mes").value;
-  const m = mVal===""?null:+mVal;
-  const movs = filterMovs(y, m===null?undefined:m).filter(x=>x.tipo==="Gasto");
-  const cats = DB.categorias.filter(c=>!c.nombre.includes("💵"));
-  const labels=[],budgets=[],reals=[];
-  cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
 
-  // Chart (same as before)
-  const ch=mkChart("c-cats",{type:"bar",data:{labels,datasets:[
-    {label:"Presupuesto",data:budgets,backgroundColor:"rgba(61,142,240,.5)",borderRadius:4},
-    {label:"Real",data:reals,backgroundColor:reals.map((r,i)=>r>budgets[i]?"rgba(231,76,60,.8)":"rgba(46,204,113,.8)"),borderRadius:4},
-  ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{position:"bottom",labels:{padding:16,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${fmt(ctx.raw,true)}`}}},scales:{x:{ticks:{callback:v=>fmt(v,true)},grid:{color:"#1E2737"}},y:{grid:{display:false}}},onClick:(e,els)=>{if(els.length)drillSubcat(cats[els[0].index],movs);}}});
-
-  // Table with expandable rows
-  const tableEl = document.getElementById("d-cat-table");
-  let html = `<div class="tbl-wrap"><table>
-    <thead><tr>
-      <th>Categoría</th>
-      <th class="text-right">Presupuesto</th>
-      <th class="text-right">Real</th>
-      <th class="text-right">Diferencia</th>
-      <th class="text-right" style="min-width:160px">Ejecución</th>
-      <th></th>
-    </tr></thead><tbody>`;
-
-  cats.forEach((c,i)=>{
-    const b=budgets[i],r=reals[i],p=b>0?r/b:0;
-    const cls=p>=1?"text-red":p>=.8?"text-gold":"text-green";
-    const isOpen = catExpanded[c.id];
-    const catMovs = movs.filter(mv=>mv.categoria===c.nombre);
-
-    html += `<tr style="cursor:pointer" onclick="toggleCatExpand('${c.id}')">
-      <td style="font-weight:600">${c.nombre}</td>
-      <td class="text-right font-mono">${fmt(b)}</td>
-      <td class="text-right font-mono">${fmt(r)}</td>
-      <td class="text-right font-mono ${cls}">${fmt(b-r)}</td>
-      <td class="text-right">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="prog" style="flex:1"><div class="prog-fill ${p>=1?"prog-over":p>=.8?"prog-warn":"prog-ok"}" style="width:${Math.min(p*100,100)}%"></div></div>
-          <span class="${cls} text-xs" style="width:36px">${fmtP(p)}</span>
-        </div>
-      </td>
-      <td style="text-align:center;color:var(--text3)">${isOpen?"▾":"▶"}</td>
-    </tr>`;
-
-    if (isOpen) {
-      if (!catMovs.length) {
-        html += `<tr><td colspan="6" style="padding:10px 14px 10px 28px;background:rgba(0,0,0,.15);font-size:12px;color:var(--text3)">Sin movimientos en este período</td></tr>`;
-      } else {
-        catMovs.sort((a,b)=>b.fecha.localeCompare(a.fecha)).forEach(mv=>{
-          html += `<tr style="background:rgba(0,0,0,.12)">
-            <td style="padding-left:28px;font-size:12px;color:var(--text2)">${mv.descripcion||mv.subcategoria}</td>
-            <td colspan="2" class="text-xs text-muted">${mv.subcategoria} · ${fmtDate(mv.fecha)} · ${mv.medio}</td>
-            <td class="text-right text-xs text-muted">${mv.cuenta}</td>
-            <td class="text-right font-mono text-red font-bold" style="font-size:13px">-${fmt(mv.monto)}</td>
-            <td></td>
-          </tr>`;
-        });
-        html += `<tr style="background:rgba(0,0,0,.12)">
-          <td style="padding-left:28px" colspan="3" class="text-xs text-muted">${catMovs.length} movimientos</td>
-          <td colspan="2" class="text-right font-bold text-red font-mono">${fmt(r)}</td>
-          <td></td>
-        </tr>`;
-      }
-    }
-  });
-
-  html += `</tbody></table></div>`;
-  tableEl.innerHTML = html;
-})();
 
 function toggleCatExpand(id) {
   catExpanded[id] = !catExpanded[id];
