@@ -2956,7 +2956,15 @@ async function guardarMovInversion() {
 
 function toggleCatExpand(id) {
   catExpanded[id] = !catExpanded[id];
-  renderCatTab();
+  // Re-render only the table portion, not the chart
+  const y=+document.getElementById("d-anio").value;
+  const mVal=document.getElementById("d-mes").value;
+  const m=mVal===""?null:+mVal;
+  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
+  const cats=DB.categorias.filter(c=>!c.nombre.includes("💵"));
+  const labels=[],budgets=[],reals=[];
+  cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
+  renderCatTable(cats,budgets,reals,movs);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3045,7 +3053,7 @@ function renderDashCuentaT() {
 // ══════════════════════════════════════════
 // CUENTAS BANCARIAS
 // ══════════════════════════════════════════
-let ctaSaldosDB = [], ctaBolsillosOpen = {};
+let ctaSaldosDB = [], ctaBolsillosOpen = {}, catExpanded = {};
 
 async function initCuentas() {
   const now = new Date();
