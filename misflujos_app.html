@@ -3122,6 +3122,94 @@ async function initInversiones() {
   renderInversiones();
 }
 
+function calcInvSaldo(inv) {
+  const movs = invMovimientosDB.filter(m=>m.inversion_id===inv.id);
+  let s = inv.saldo_inicial;
+  movs.forEach(m=>{
+    if (m.tipo==="deposito"||m.tipo==="rendimiento") s+=m.monto;
+    else if (m.tipo==="retiro") s-=m.monto;
+  });
+  return s;
+}
+
+function renderInversiones() {
+  const total  = inversionesDB.reduce((s,i)=>s+calcInvSaldo(i),0);
+  const rend   = invMovimientosDB.filter(m=>m.tipo==="rendimiento").reduce((s,m)=>s+m.monto,0);
+  const capital= inversionesDB.reduce((s,i)=>s+i.saldo_inicial,0)
+               + invMovimientosDB.filter(m=>m.tipo==="deposito").reduce((s,m)=>s+m.monto,0);
+  const kpiEl  = document.getElementById("inv-kpis");
+  if (kpiEl) kpiEl.innerHTML = `
+    <div class="kpi b"><div class="kpi-lbl">Portafolio total</div><div class="kpi-val">${fmt(total,true)}</div></div>
+    <div class="kpi g"><div class="kpi-lbl">Rendimientos</div><div class="kpi-val">${fmt(rend,true)}</div></div>
+    <div class="kpi o"><div class="kpi-lbl">Capital invertido</div><div class="kpi-val">${fmt(capital,true)}</div></div>
+    <div class="kpi p"><div class="kpi-lbl">Activas</div><div class="kpi-val">${inversionesDB.filter(i=>i.activa).length}</div></div>`;
+
+  const listEl = document.getElementById("inv-list");
+  if (!listEl) return;
+
+  if (!inversionesDB.length) {
+    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><h3>Sin inversiones</h3><p>Crea tu primera inversión digital con el botón de arriba.</p></div>';
+    return;
+  }
+
+  listEl.innerHTML = inversionesDB.map(inv => {
+    const movs    = invMovimientosDB.filter(m=>m.inversion_id===inv.id);
+    const saldo   = calcInvSaldo(inv);
+    const rendInv = movs.filter(m=>m.tipo==="rendimiento").reduce((s,m)=>s+m.monto,0);
+    const deps    = movs.filter(m=>m.tipo==="deposito").reduce((s,m)=>s+m.monto,0);
+    const rets    = movs.filter(m=>m.tipo==="retiro").reduce((s,m)=>s+m.monto,0);
+    const pct     = (inv.saldo_inicial+deps)>0 ? rendInv/(inv.saldo_inicial+deps)*100 : 0;
+    const isOpen  = ctaBolsillosOpen["inv_"+inv.id];
+
+    const hist = isOpen ? `
+      <div style="border-top:1px solid var(--border)">
+        <div style="padding:8px 14px;font-size:10px;color:var(--text3);font-weight:600;background:rgba(0,0,0,.15)">HISTORIAL DE MOVIMIENTOS</div>
+        ${movs.length ? movs.slice().reverse().map(m=>`
+          <div class="inv-hist-item">
+            <div>
+              <div style="font-size:13px;font-weight:500">${m.tipo==="deposito"?"💰 Depósito":m.tipo==="retiro"?"💸 Retiro":"📊 Rendimiento"}</div>
+              <div style="font-size:11px;color:var(--text2)">${fmtDate(m.fecha)}${m.notas?" · "+m.notas:""}</div>
+            </div>
+            <span class="${m.tipo==="retiro"?"text-red":m.tipo==="rendimiento"?"text-gold":"text-green"} font-bold">
+              ${m.tipo==="retiro"?"-":"+"}${fmt(m.monto,true)}
+            </span>
+          </div>`).join("")
+        : '<div style="padding:12px 14px;font-size:13px;color:var(--text3)">Sin movimientos aún</div>'}
+      </div>` : "";
+
+    return `<div class="inv-card">
+      <div class="inv-card-hdr">
+        <div>
+          <div class="inv-card-name">📈 ${inv.nombre}</div>
+          <div class="inv-card-sub">${inv.plataforma} · Inicio: ${fmtDate(inv.fecha_inicio)}</div>
+          <div style="display:flex;gap:5px;margin-top:6px">
+            <span class="inv-badge" style="background:rgba(61,142,240,.15);color:var(--accent)">${inv.tipo}</span>
+            <span class="inv-badge" style="${inv.activa?"background:var(--gbg);color:var(--green)":"background:var(--rbg);color:var(--red)"}">${inv.activa?"Activa":"Cerrada"}</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-d);font-size:20px;font-weight:700;color:var(--green)">${fmt(saldo,true)}</div>
+          <div style="font-size:11px;color:${pct>=0?"var(--green)":"var(--red)"}">Rendimiento: ${pct>=0?"+":""}${pct.toFixed(1)}%</div>
+        </div>
+      </div>
+      <div class="inv-stats-row">
+        <div class="inv-stat"><div class="inv-stat-lbl">Capital inicial</div><div class="inv-stat-val">${fmt(inv.saldo_inicial,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-lbl">Depósitos</div><div class="inv-stat-val text-green">+${fmt(deps,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-lbl">Retiros</div><div class="inv-stat-val text-red">-${fmt(rets,true)}</div></div>
+        <div class="inv-stat"><div class="inv-stat-lbl">Rendimientos</div><div class="inv-stat-val text-gold">+${fmt(rendInv,true)}</div></div>
+      </div>
+      <div class="inv-actions-row">
+        <button class="btn btn-ghost btn-sm" onclick="openInvMov('${inv.id}','${inv.nombre}','deposito')">+ Depósito</button>
+        <button class="btn btn-ghost btn-sm" onclick="openInvMov('${inv.id}','${inv.nombre}','retiro')">− Retiro</button>
+        <button class="btn btn-ghost btn-sm" onclick="openInvMov('${inv.id}','${inv.nombre}','rendimiento')">📊 Rendimiento</button>
+        <button class="btn btn-ghost btn-sm" onclick="ctaBolsillosOpen['inv_${inv.id}']=!ctaBolsillosOpen['inv_${inv.id}'];renderInversiones()">${isOpen?"▾ Ocultar":"▶ Historial"}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInversion('${inv.id}')">🗑</button>
+      </div>
+      ${hist}
+    </div>`;
+  }).join("");
+}
+
 function showInvModal() {
   document.getElementById("inv-fecha-ini").value = today();
   document.getElementById("inv-modal").style.display = "flex";
