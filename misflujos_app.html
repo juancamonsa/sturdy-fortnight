@@ -418,6 +418,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
             <div class="chart-box"><div class="chart-box-title">Distribución de gastos</div><div class="chart-wrap h200"><canvas id="c-pie"></canvas></div></div>
           </div>
           <div class="chart-box"><div class="chart-box-title">Flujo neto mensual</div><div class="chart-wrap h140"><canvas id="c-flujo"></canvas></div></div>
+          <div id="dash-cuenta-t-section"></div>
         </div>
         <!-- Por categoría -->
         <div id="dtab-categorias" style="display:none">
@@ -1173,6 +1174,8 @@ function renderResumen(movs,y,m) {
 
   const netArr=ingArr.map((v,i)=>v-gasArr[i]);
   mkChart("c-flujo",{type:"line",data:{labels:lbls,datasets:[{label:"Flujo neto",data:netArr,borderColor:"#3D8EF0",backgroundColor:"rgba(61,142,240,.1)",fill:true,tension:.4,pointRadius:4,pointBackgroundColor:"#3D8EF0"}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmt(v,true)},grid:{color:"#1E2737"}},x:{grid:{display:false}}}}});
+  // Render cuenta T section
+  renderDashCuentaT();
 }
 
 function renderCatTab() {
@@ -1248,16 +1251,37 @@ function initRegistrar() {
   buildCatSel();
   buildMedioSel();
   buildCuentaSel();
+  buildCuentaSel("r-cuenta-destino");
   renderRecientes();
   renderBudgetPreview();
 }
 
 function setTipo(t) {
-  TIPO=t;
-  document.getElementById("rb-gasto").classList.toggle("active",t==="Gasto");
-  document.getElementById("rb-ingreso").classList.toggle("active",t==="Ingreso");
-  document.getElementById("rb-gasto").classList.toggle("r",true);
-  document.getElementById("rb-ingreso").classList.toggle("g",true);
+  TIPO = t;
+  document.getElementById("rb-gasto").classList.toggle("active", t==="Gasto");
+  document.getElementById("rb-ingreso").classList.toggle("active", t==="Ingreso");
+  document.getElementById("rb-transferencia").classList.toggle("active", t==="Transferencia");
+
+  // Mostrar/ocultar campos de transferencia
+  const destinoWrap = document.getElementById("r-cuenta-destino-wrap");
+  const cuentaLabel = document.getElementById("r-cuenta-label");
+  const catField    = document.getElementById("r-cat")?.closest(".field");
+  const subField    = document.getElementById("r-sub")?.closest(".field");
+  const medioField  = document.getElementById("r-medio")?.closest(".field");
+
+  if (t === "Transferencia") {
+    if (destinoWrap) destinoWrap.classList.remove("hidden");
+    if (cuentaLabel) cuentaLabel.textContent = "Cuenta origen";
+    if (catField)   catField.style.opacity   = "0.3";
+    if (subField)   subField.style.opacity   = "0.3";
+    if (medioField) medioField.style.opacity  = "0.5";
+  } else {
+    if (destinoWrap) destinoWrap.classList.add("hidden");
+    if (cuentaLabel) cuentaLabel.textContent = "Cuenta / Tarjeta";
+    if (catField)   catField.style.opacity   = "1";
+    if (subField)   subField.style.opacity   = "1";
+    if (medioField) medioField.style.opacity  = "1";
+  }
   buildCatSel();
 }
 
@@ -2941,12 +2965,7 @@ function toggleCatExpand(id) {
 // ══════════════════════════════════════════════════════════════
 // MODULE 4: CUENTA T EN DASHBOARD (add to renderDashboard)
 // ══════════════════════════════════════════════════════════════
-const _origRenderDashboard = window.renderDashboard;
-window.renderDashboard = function() {
-  _origRenderDashboard();
-  // Add cuenta T section after existing content
-  setTimeout(()=>renderDashCuentaT(), 50);
-};
+// renderDashboard patch removed - renderDashCuentaT called from renderResumen
 
 function renderDashCuentaT() {
   const y = +document.getElementById("d-anio").value;
@@ -2957,7 +2976,7 @@ function renderDashCuentaT() {
   // Find or create container
   let container = document.getElementById("dash-cuenta-t-section");
   if (!container) {
-    const dashWrap = document.querySelector("#tab-resumen");
+    const dashWrap = document.getElementById("dtab-resumen");
     if (!dashWrap) return;
     container = document.createElement("div");
     container.id = "dash-cuenta-t-section";
