@@ -198,6 +198,8 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .hidden{display:none!important}
+.hamburger-btn{display:none;align-items:center;justify-content:center;background:none;border:none;color:var(--text2);cursor:pointer;padding:6px;border-radius:var(--r-sm);flex-shrink:0}
+.hamburger-btn:hover{background:var(--bg3);color:var(--text)}
 @media(min-width:701px){#mobile-nav,#mobile-overlay{display:none!important}.hamburger-btn{display:none!important}}
 @media(max-width:700px){.sidebar{display:none}.grid-2,.grid-3{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}.hamburger-btn{display:flex!important}.hide-mobile{display:none!important}}
 
@@ -266,9 +268,9 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .inv-badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .inv-hist-item{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:13px}
 .inv-hist-item:last-child{border-bottom:none}
-#mobile-nav{position:fixed;top:0;left:-240px;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);z-index:200;overflow-y:auto;transition:left .25s ease}
+#mobile-nav{position:fixed;top:0;left:-240px;bottom:0;width:240px;background:var(--bg2);border-right:1px solid var(--border);z-index:9999;overflow-y:auto;transition:left .25s ease;pointer-events:auto}
 #mobile-nav.open{left:0}
-#mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199}
+#mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998}
 #mobile-overlay.open{display:block}
 </style>
 </head>
@@ -471,6 +473,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
               <button class="tipo-btn r active" id="rb-gasto" onclick="setTipo('Gasto')">💸 Gasto</button>
               <button class="tipo-btn g" id="rb-ingreso" onclick="setTipo('Ingreso')">💵 Ingreso</button>
               <button class="tipo-btn" id="rb-transferencia" onclick="setTipo('Transferencia')" style="color:var(--text2)">🔄 Transferencia</button>
+              <button class="tipo-btn" id="rb-egreso" onclick="setTipo('Egreso')" style="color:var(--text2)">🏧 Egreso cuenta</button>
             </div>
             <div class="monto-row">
               <span class="monto-sign" id="monto-sign">$</span>
@@ -1187,7 +1190,7 @@ function renderCatTab() {
   const y=+document.getElementById("d-anio").value;
   const mVal=document.getElementById("d-mes").value;
   const m=mVal===""?null:+mVal;
-  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
+  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia"&&x.categoria!=="🏧 Egreso");
   const cats=DB.categorias.filter(c=>!c.nombre.includes("💵"));
   const labels=[],budgets=[],reals=[];
   cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
@@ -1329,6 +1332,7 @@ function setTipo(t) {
   document.getElementById("rb-gasto").classList.toggle("active", t==="Gasto");
   document.getElementById("rb-ingreso").classList.toggle("active", t==="Ingreso");
   document.getElementById("rb-transferencia").classList.toggle("active", t==="Transferencia");
+  document.getElementById("rb-egreso").classList.toggle("active", t==="Egreso");
 
   // Mostrar/ocultar campos de transferencia
   const destinoWrap = document.getElementById("r-cuenta-destino-wrap");
@@ -1340,6 +1344,12 @@ function setTipo(t) {
   if (t === "Transferencia") {
     if (destinoWrap) destinoWrap.classList.remove("hidden");
     if (cuentaLabel) cuentaLabel.textContent = "Cuenta origen";
+    if (catField)   catField.style.opacity   = "0.3";
+    if (subField)   subField.style.opacity   = "0.3";
+    if (medioField) medioField.style.opacity  = "0.5";
+  } else if (t === "Egreso") {
+    if (destinoWrap) destinoWrap.classList.add("hidden");
+    if (cuentaLabel) cuentaLabel.textContent = "Cuenta bancaria";
     if (catField)   catField.style.opacity   = "0.3";
     if (subField)   subField.style.opacity   = "0.3";
     if (medioField) medioField.style.opacity  = "0.5";
@@ -1397,12 +1407,14 @@ async function guardar() {
   const d=new Date(fecha+"T12:00:00");
   const cuentaOrigen  = document.getElementById("r-cuenta").value;
   const cuentaDestino = document.getElementById("r-cuenta-destino")?.value || "";
-  const esTransf = TIPO==="Transferencia";
+  const esTransf  = TIPO==="Transferencia";
+  const esEgreso  = TIPO==="Egreso";
   const mov={
     fecha, tipo:TIPO, monto,
-    descripcion: document.getElementById("r-desc").value.trim() || (esTransf ? `Transf. → ${cuentaDestino}` : ""),
-    categoria:    esTransf ? "🔄 Transferencia" : (cat?.nombre||""),
-    subcategoria: esTransf ? `→ ${cuentaDestino}` : document.getElementById("r-sub").value,
+    descripcion: document.getElementById("r-desc").value.trim() ||
+      (esTransf ? `Transf. → ${cuentaDestino}` : esEgreso ? "Egreso cuenta" : ""),
+    categoria:    esTransf ? "🔄 Transferencia" : esEgreso ? "🏧 Egreso" : (cat?.nombre||""),
+    subcategoria: esTransf ? `→ ${cuentaDestino}` : esEgreso ? "Egreso bancario" : document.getElementById("r-sub").value,
     medio:        document.getElementById("r-medio").value,
     cuenta:       cuentaOrigen,
     cuenta_destino: esTransf ? cuentaDestino : "",
@@ -1459,7 +1471,7 @@ function renderRecientes() {
 
 function renderBudgetPreview() {
   const now=new Date(),m=now.getMonth(),y=now.getFullYear();
-  const movs=DB.movimientos.filter(x=>x.mes===m&&x.anio===y&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
+  const movs=DB.movimientos.filter(x=>x.mes===m&&x.anio===y&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia"&&x.categoria!=="🏧 Egreso");
   const el=document.getElementById("r-budget-preview");
   el.innerHTML=DB.categorias.filter(c=>!c.nombre.includes("💵")).map(c=>{
     const b=catBudget(c.id),r=catReal(movs,c.nombre),p=b>0?r/b:0;
@@ -1622,7 +1634,7 @@ function renderPresupuesto() {
   const anio   = +document.getElementById("p-anio").value;
   const mes    = mesVal === "-1" ? null : +mesVal;
   const dispMes = mes !== null ? mes : new Date().getMonth();
-  const movs   = DB.movimientos.filter(x=>x.mes===dispMes&&x.anio===anio&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
+  const movs   = DB.movimientos.filter(x=>x.mes===dispMes&&x.anio===anio&&x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia"&&x.categoria!=="🏧 Egreso");
 
   let gastos=0, ingresos=0;
   DB.categorias.forEach(c=>{
@@ -2970,7 +2982,7 @@ function toggleCatExpand(id) {
   const y=+document.getElementById("d-anio").value;
   const mVal=document.getElementById("d-mes").value;
   const m=mVal===""?null:+mVal;
-  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
+  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia"&&x.categoria!=="🏧 Egreso");
   const cats=DB.categorias.filter(c=>!c.nombre.includes("💵"));
   const labels=[],budgets=[],reals=[];
   cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
@@ -3083,6 +3095,107 @@ async function initCuentas() {
   try { ctaSaldosDB = await sbGet("cuentas_saldos","select=*&limit=1000") || []; }
   catch(e) { ctaSaldosDB = []; }
   renderCuentas();
+}
+
+function renderCuentas() {
+  const selM = document.getElementById("cta-mes");
+  const selA = document.getElementById("cta-anio");
+  if (!selM || !selA) return;
+  const mes = +selM.value, anio = +selA.value;
+  const titleEl = document.getElementById("cta-t-title");
+  if (titleEl) titleEl.textContent = `Balance por cuenta — ${MONTHS[mes]} ${anio}`;
+  const movs = DB.movimientos.filter(m=>m.mes===mes&&m.anio===anio);
+
+  // KPIs
+  const totalIng = movs.filter(m=>m.tipo==="Ingreso"&&m.categoria!=="🔄 Transferencia").reduce((s,m)=>s+m.monto,0);
+  const totalGas = movs.filter(m=>m.tipo==="Gasto"&&m.categoria!=="🔄 Transferencia").reduce((s,m)=>s+m.monto,0);
+  const neto = totalIng - totalGas;
+  const kpiEl = document.getElementById("cta-kpis");
+  if (kpiEl) kpiEl.innerHTML = `
+    <div class="kpi g"><div class="kpi-lbl">Ingresos ${MONTHS[mes]}</div><div class="kpi-val">${fmt(totalIng,true)}</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Gastos ${MONTHS[mes]}</div><div class="kpi-val">${fmt(totalGas,true)}</div></div>
+    <div class="kpi ${neto>=0?"b":"r"}"><div class="kpi-lbl">Flujo neto</div><div class="kpi-val">${fmt(neto,true)}</div></div>
+    <div class="kpi t"><div class="kpi-lbl">Cuentas</div><div class="kpi-val">${DB.cuentas.length}</div></div>`;
+
+  const list = document.getElementById("cta-list");
+  if (!list) return;
+  if (!DB.cuentas || !DB.cuentas.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🏦</div><h3>Sin cuentas</h3><p>Ve a Configuración para agregar tus cuentas.</p></div>';
+    return;
+  }
+
+  list.innerHTML = DB.cuentas.map(c => {
+    const cMovsIng = movs.filter(m=>
+      (m.tipo==="Ingreso"&&m.cuenta===c.nombre) ||
+      (m.tipo==="Transferencia"&&m.cuenta===c.nombre&&(m.subcategoria||"").startsWith("←"))
+    );
+    const cMovsGas = movs.filter(m=>
+      (m.tipo==="Gasto"&&m.cuenta===c.nombre) ||
+      (m.tipo==="Transferencia"&&m.cuenta===c.nombre&&(m.subcategoria||"").startsWith("→")) ||
+      (m.tipo==="Egreso"&&m.cuenta===c.nombre)
+    );
+    const ing = cMovsIng.reduce((s,m)=>s+m.monto,0);
+    const gas = cMovsGas.reduce((s,m)=>s+m.monto,0);
+    const bal = ing - gas;
+    const isOpen = ctaBolsillosOpen[c.id];
+    const bolsillos = ctaSaldosDB.filter(b=>b.cuenta===c.nombre&&b.mes===mes&&b.anio===anio);
+    const totalBol = bolsillos.reduce((s,b)=>s+b.saldo,0);
+    const sinAsignar = bal - totalBol;
+    const tipoIcon = c.tipo==="Credito"?"💳":c.tipo==="Efectivo"?"💵":"🏦";
+    const ingRows = cMovsIng.slice(0,4).map(m=>`<div class="cta-t-row"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("");
+    const gasRows = cMovsGas.slice(0,4).map(m=>`<div class="cta-t-row"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${m.descripcion||m.subcategoria}</span><span>${fmt(m.monto,true)}</span></div>`).join("");
+
+    return `<div class="cta-card">
+      <div class="cta-card-hdr" onclick="toggleCta('${c.id}')">
+        <div class="cta-card-name">${tipoIcon} ${c.nombre} <span style="font-size:11px;color:var(--text2);font-weight:400">${c.tipo}${c.banco?" · "+c.banco:""}</span></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="${bal>=0?"text-green":"text-red"}" style="font-family:var(--font-d);font-size:16px;font-weight:700">${fmt(bal,true)}</span>
+          <span style="color:var(--text2)">${isOpen?"▾":"▶"}</span>
+        </div>
+      </div>
+      ${isOpen ? `
+      <div class="bolsillos-wrap">
+        <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:6px">BOLSILLOS</div>
+        ${bolsillos.map(b=>`
+          <div class="bolsillo-row">
+            <span class="text-muted">${b.bolsillo}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="text" value="${fmtInput(b.saldo)}"
+                style="width:120px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:4px 8px;font-size:12px;text-align:right;outline:none"
+                onfocus="this.value=parseMonto(this.value)||0;this.select()"
+                onblur="saveBolsillo('${c.nombre}','${b.bolsillo}',${mes},${anio},this)">
+              <button onclick="deleteBolsillo('${b.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px">🗑</button>
+            </div>
+          </div>`).join("")}
+        <div class="bolsillo-row" style="border-bottom:none">
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="text" id="new-bolsillo-${c.id}" placeholder="Nuevo bolsillo..."
+              style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:5px 8px;font-size:12px;outline:none;width:160px">
+            <button class="btn btn-ghost btn-sm" onclick="addBolsillo('${c.nombre}','${c.id}',${mes},${anio})">+ Agregar</button>
+          </div>
+          <span class="text-muted text-xs">${fmt(sinAsignar,true)} sin asignar</span>
+        </div>
+      </div>
+      <div class="cta-t-wrap">
+        <div class="cta-t-col">
+          <div class="cta-t-lbl">${c.tipo==="Credito"?"PAGOS":"INGRESOS"}</div>
+          ${ingRows||'<div class="cta-t-row text-muted">Sin movimientos</div>'}
+          ${cMovsIng.length>4?`<div class="cta-t-row text-xs" style="color:var(--accent)">+${cMovsIng.length-4} más</div>`:""}
+          <div class="cta-t-total text-green"><span>Total</span><span>${fmt(ing)}</span></div>
+        </div>
+        <div class="cta-t-col">
+          <div class="cta-t-lbl">${c.tipo==="Credito"?"CARGOS":"EGRESOS"}</div>
+          ${gasRows||'<div class="cta-t-row text-muted">Sin movimientos</div>'}
+          ${cMovsGas.length>4?`<div class="cta-t-row text-xs" style="color:var(--accent)">+${cMovsGas.length-4} más</div>`:""}
+          <div class="cta-t-total text-red"><span>Total</span><span>${fmt(gas)}</span></div>
+        </div>
+      </div>
+      <div class="cta-balance-bar">
+        <span class="text-muted text-sm">Balance neto ${MONTHS[mes]}</span>
+        <span class="${bal>=0?"text-green":"text-red"}" style="font-family:var(--font-d);font-size:15px;font-weight:700">${fmt(bal)}</span>
+      </div>` : ""}
+    </div>`;
+  }).join("");
 }
 
 function toggleCta(id) {
