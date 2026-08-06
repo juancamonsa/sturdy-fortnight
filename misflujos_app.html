@@ -198,7 +198,8 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .hidden{display:none!important}
-@media(max-width:700px){.sidebar{display:none}.grid-2,.grid-3{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:701px){#mobile-nav,#mobile-overlay{display:none!important}.hamburger-btn{display:none!important}}
+@media(max-width:700px){.sidebar{display:none}.grid-2,.grid-3{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}.hamburger-btn{display:flex!important}.hide-mobile{display:none!important}}
 
 /* ── CUENTAS & INVERSIONES ── */
 .bolsillos-wrap{padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--border)}
@@ -1394,18 +1395,24 @@ async function guardar() {
   if(!monto||monto<=0){showAlert(alertEl,"Ingresa un monto válido","err");return;}
   if(!fecha){showAlert(alertEl,"Selecciona una fecha","err");return;}
   const d=new Date(fecha+"T12:00:00");
-  const mov={fecha,tipo:TIPO,monto,
-    descripcion:document.getElementById("r-desc").value.trim(),
-    categoria:cat?.nombre||"",
-    subcategoria:document.getElementById("r-sub").value,
-    medio:document.getElementById("r-medio").value,
-    cuenta:document.getElementById("r-cuenta").value,
-    notas:document.getElementById("r-notas").value.trim(),
-    mes:d.getMonth(),anio:d.getFullYear()};
+  const cuentaOrigen  = document.getElementById("r-cuenta").value;
+  const cuentaDestino = document.getElementById("r-cuenta-destino")?.value || "";
+  const esTransf = TIPO==="Transferencia";
+  const mov={
+    fecha, tipo:TIPO, monto,
+    descripcion: document.getElementById("r-desc").value.trim() || (esTransf ? `Transf. → ${cuentaDestino}` : ""),
+    categoria:    esTransf ? "🔄 Transferencia" : (cat?.nombre||""),
+    subcategoria: esTransf ? `→ ${cuentaDestino}` : document.getElementById("r-sub").value,
+    medio:        document.getElementById("r-medio").value,
+    cuenta:       cuentaOrigen,
+    cuenta_destino: esTransf ? cuentaDestino : "",
+    notas:        document.getElementById("r-notas").value.trim(),
+    mes:d.getMonth(), anio:d.getFullYear()
+  };
 
   const btn=document.getElementById("btn-guardar")||{};
   try {
-    mov.id = Date.now().toString(36);
+    mov.id = Date.now().toString(36)+Math.random().toString(36).slice(2,5);
     await saveMovToSupabase(mov);
     DB.movimientos.unshift(mov);
     save();
@@ -2307,7 +2314,10 @@ async function sbPost(table, body) {
     },
     body: JSON.stringify(body)
   });
-  if (!r.ok) throw new Error(`Supabase POST error: ${r.status}`);
+  if (!r.ok) {
+    const errText = await r.text();
+    throw new Error(`Supabase POST error: ${r.status} — ${errText.slice(0,150)}`);
+  }
   return r.json();
 }
 
@@ -3125,7 +3135,7 @@ async function saveInversion() {
   const saldoIni = parseMonto(document.getElementById("inv-saldo-ini").value) || 0;
   const fecha    = document.getElementById("inv-fecha-ini").value;
   if (!nombre) { toast("Ingresa un nombre","err"); return; }
-  const inv = {id:Date.now().toString(36),nombre,plataforma:plat,tipo,saldo_inicial:saldoIni,fecha_inicio:fecha,activa:true};
+  const inv = {id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),nombre,plataforma:plat,tipo,saldo_inicial:saldoIni,fecha_inicio:fecha||new Date().toISOString().split('T')[0],activa:true};
   try {
     await sbPost("inversiones",inv);
     inversionesDB.push(inv);
