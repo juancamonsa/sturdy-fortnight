@@ -1186,21 +1186,84 @@ function renderCatTab() {
   const y=+document.getElementById("d-anio").value;
   const mVal=document.getElementById("d-mes").value;
   const m=mVal===""?null:+mVal;
-  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto");
+  const movs=filterMovs(y,m===null?undefined:m).filter(x=>x.tipo==="Gasto"&&x.categoria!=="🔄 Transferencia");
   const cats=DB.categorias.filter(c=>!c.nombre.includes("💵"));
   const labels=[],budgets=[],reals=[];
   cats.forEach(c=>{const b=catBudget(c.id),r=catReal(movs,c.nombre);labels.push(c.nombre);budgets.push(b);reals.push(r);});
-  const ch=mkChart("c-cats",{type:"bar",data:{labels,datasets:[
+
+  mkChart("c-cats",{type:"bar",data:{labels,datasets:[
     {label:"Presupuesto",data:budgets,backgroundColor:"rgba(61,142,240,.5)",borderRadius:4},
     {label:"Real",data:reals,backgroundColor:reals.map((r,i)=>r>budgets[i]?"rgba(231,76,60,.8)":"rgba(46,204,113,.8)"),borderRadius:4},
-  ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{position:"bottom",labels:{padding:16,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${fmt(ctx.raw,true)}`}}},scales:{x:{ticks:{callback:v=>fmt(v,true)},grid:{color:"#1E2737"}},y:{grid:{display:false}}},onClick:(e,els)=>{if(els.length)drillSubcat(cats[els[0].index],movs);}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{position:"bottom",labels:{padding:16,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${fmt(ctx.raw,true)}`}}},scales:{x:{ticks:{callback:v=>fmt(v,true)},grid:{color:"#1E2737"}},y:{grid:{display:false}}},onClick:(e,els)=>{if(els.length){toggleCatExpand(cats[els[0].index].id);document.getElementById("d-cat-table").scrollIntoView({behavior:"smooth"});}}}});
 
-  document.getElementById("d-cat-table").innerHTML=`<table><thead><tr><th>Categoría</th><th class="text-right">Presupuesto</th><th class="text-right">Real</th><th class="text-right">Diferencia</th><th class="text-right" style="min-width:160px">Ejecución</th></tr></thead><tbody>${cats.map((c,i)=>{
-    const b=budgets[i],r=reals[i],p=b>0?r/b:0;
-    const cls=p>=1?"text-red":p>=.8?"text-gold":"text-green";
-    return `<tr><td>${c.nombre}</td><td class="text-right font-mono">${fmt(b)}</td><td class="text-right font-mono">${fmt(r)}</td><td class="text-right font-mono ${cls}">${fmt(b-r)}</td><td class="text-right"><div style="display:flex;align-items:center;gap:8px"><div class="prog" style="flex:1"><div class="prog-fill ${p>=1?"prog-over":p>=.8?"prog-warn":"prog-ok"}" style="width:${Math.min(p*100,100)}%"></div></div><span class="${cls} text-xs" style="width:36px">${fmtP(p)}</span></div></td></tr>`;
-  }).join("")}</tbody></table>`;
+  renderCatTable(cats, budgets, reals, movs);
 }
+
+function renderCatTable(cats, budgets, reals, movs) {
+  const tableEl = document.getElementById("d-cat-table");
+  let html = `<div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>Categoría</th>
+      <th class="text-right hide-mobile">Presupuesto</th>
+      <th class="text-right">Real</th>
+      <th class="text-right hide-mobile">Diferencia</th>
+      <th class="text-right" style="min-width:120px">Ejecución</th>
+      <th style="width:24px"></th>
+    </tr></thead><tbody>`;
+
+  cats.forEach((c,i)=>{
+    const b=budgets[i], r=reals[i], p=b>0?r/b:0;
+    const cls=p>=1?"text-red":p>=.8?"text-gold":"text-green";
+    const isOpen=catExpanded[c.id];
+    const catMovs=movs.filter(mv=>mv.categoria===c.nombre);
+
+    // Category row - clickable
+    html+=`<tr style="cursor:pointer;transition:background .15s" onclick="toggleCatExpand('${c.id}')" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
+      <td style="font-weight:600">${c.nombre}</td>
+      <td class="text-right font-mono hide-mobile">${fmt(b)}</td>
+      <td class="text-right font-mono">${fmt(r)}</td>
+      <td class="text-right font-mono ${cls} hide-mobile">${fmt(b-r)}</td>
+      <td class="text-right">
+        <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+          <div class="prog" style="flex:1;max-width:80px"><div class="prog-fill ${p>=1?"prog-over":p>=.8?"prog-warn":"prog-ok"}" style="width:${Math.min(p*100,100)}%"></div></div>
+          <span class="${cls} text-xs" style="min-width:32px;text-align:right">${fmtP(p)}</span>
+        </div>
+      </td>
+      <td style="text-align:center;color:var(--text3);font-size:12px">${isOpen?"▾":"▶"}</td>
+    </tr>`;
+
+    // Expanded movimientos rows
+    if (isOpen) {
+      if (!catMovs.length) {
+        html+=`<tr><td colspan="6" style="padding:10px 14px 10px 28px;background:rgba(0,0,0,.15);font-size:12px;color:var(--text3);border-bottom:1px solid var(--border)">Sin movimientos en este período</td></tr>`;
+      } else {
+        catMovs.sort((a,b)=>b.fecha.localeCompare(a.fecha)).forEach(mv=>{
+          html+=`<tr style="background:rgba(61,142,240,.04);border-left:3px solid var(--accent)">
+            <td style="padding-left:20px">
+              <div style="font-size:13px;color:var(--text)">${mv.descripcion||mv.subcategoria}</div>
+              <div style="font-size:10px;color:var(--text3)">${mv.subcategoria} · ${fmtDate(mv.fecha)}</div>
+            </td>
+            <td class="text-xs text-muted hide-mobile" style="vertical-align:middle">${mv.medio||""}</td>
+            <td class="text-right font-mono text-red" style="font-size:13px;font-weight:600;vertical-align:middle">-${fmt(mv.monto)}</td>
+            <td class="text-right text-xs text-muted hide-mobile" style="vertical-align:middle">${mv.cuenta||""}</td>
+            <td colspan="2" style="vertical-align:middle"></td>
+          </tr>`;
+        });
+        // Subtotal row
+        html+=`<tr style="background:rgba(0,0,0,.1)">
+          <td style="padding-left:20px;font-size:12px;color:var(--text2)">${catMovs.length} movimiento${catMovs.length!==1?"s":""}</td>
+          <td class="hide-mobile"></td>
+          <td class="text-right font-mono text-red font-bold">${fmt(r)}</td>
+          <td colspan="3"></td>
+        </tr>`;
+      }
+    }
+  });
+
+  html+=`</tbody></table></div>`;
+  tableEl.innerHTML=html;
+}
+
 
 function drillSubcat(cat,movs) {
   const b=DB.presupuestos[cat.id]||{};
