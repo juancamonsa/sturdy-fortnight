@@ -1148,7 +1148,9 @@ function renderKPIs(movs,y,m) {
   const ing=movs.filter(x=>x.tipo==="Ingreso").reduce((s,x)=>s+x.monto,0);
   const gas=movs.filter(x=>x.tipo==="Gasto").reduce((s,x)=>s+x.monto,0);
   const neto=ing-gas;
-  const totalB=DB.categorias.filter(c=>!c.nombre.includes("💵")).reduce((s,c)=>s+catBudget(c.id),0);
+  const totalB=DB.categorias.filter(c=>!c.nombre.includes("💵")).reduce((s,c)=>{
+    return s + (m!==null ? catBudgetForMes(c.id,m) : catBudget(c.id));
+  },0);
   const budgetP=m===null?totalB*12:totalB;
   const ejec=budgetP>0?gas/budgetP:(gas>0?2:0);
   document.getElementById("d-kpis").innerHTML=`
@@ -1177,7 +1179,44 @@ function renderResumen(movs,y,m) {
   const gasMovs=movs.filter(x=>x.tipo==="Gasto");
   const catTotals=DB.categorias.filter(c=>!c.nombre.includes("💵")).map(c=>({name:c.nombre,val:catReal(gasMovs,c.nombre)})).filter(c=>c.val>0).sort((a,b)=>b.val-a.val);
   if(catTotals.length) {
-    mkChart("c-pie",{type:"doughnut",data:{labels:catTotals.map(c=>c.name),datasets:[{data:catTotals.map(c=>c.val),backgroundColor:COLORS.slice(0,catTotals.length),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:"60%",plugins:{legend:{position:"right",labels:{font:{size:11},padding:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw,true)}`}}}}});
+    const totalGastosPie = catTotals.reduce((s,c)=>s+c.val,0);
+  mkChart("c-pie",{
+    type:"doughnut",
+    data:{
+      labels:catTotals.map(c=>c.name),
+      datasets:[{data:catTotals.map(c=>c.val),backgroundColor:COLORS.slice(0,catTotals.length),borderWidth:0,hoverOffset:6}]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      cutout:"60%",
+      plugins:{
+        legend:{
+          position:"right",
+          labels:{
+            font:{size:11},
+            padding:12,
+            generateLabels: function(chart) {
+              const ds = chart.data.datasets[0];
+              return chart.data.labels.map(function(label, i) {
+                const val = ds.data[i];
+                const pct = totalGastosPie>0 ? (val/totalGastosPie*100).toFixed(1) : 0;
+                return {text: label+" "+pct+"%", fillStyle: ds.backgroundColor[i], strokeStyle: ds.backgroundColor[i], index: i};
+              });
+            }
+          }
+        },
+        tooltip:{
+          callbacks:{
+            label: function(ctx) {
+              const pct = totalGastosPie>0 ? (ctx.raw/totalGastosPie*100).toFixed(1) : 0;
+              return ctx.label+": "+fmt(ctx.raw,true)+" ("+pct+"%)";
+            }
+          }
+        }
+      }
+    }
+  });
   }
 
   const netArr=ingArr.map((v,i)=>v-gasArr[i]);
@@ -1736,6 +1775,8 @@ async function savePresupuesto() {
         if (!DB.presupuestos_mensual[key]) DB.presupuestos_mensual[key] = {};
         if (!DB.presupuestos_mensual[key][cat.id]) DB.presupuestos_mensual[key][cat.id] = {};
         DB.presupuestos_mensual[key][cat.id][sub] = v;
+        // Also update base presupuesto so catBudget() reflects current values
+        DB.presupuestos[cat.id][sub] = v;
       }
     });
   });
