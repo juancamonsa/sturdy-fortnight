@@ -1196,6 +1196,7 @@ function renderResumen(movs,y,m) {
           labels:{
             font:{size:11},
             padding:12,
+            color:"#E2EAF4",
             generateLabels: function(chart) {
               const ds = chart.data.datasets[0];
               return chart.data.labels.map(function(label, i) {
@@ -1782,9 +1783,20 @@ async function savePresupuesto() {
   });
   save();
   if (IS_SERVER) await saveConfig();
-  toast(mes !== null ? `Presupuesto de ${MONTHS[mes]} guardado ✓` : "Presupuesto base guardado ✓");
-  // Re-render presupuesto KPIs
+  const msg = mes !== null ? `Presupuesto de ${MONTHS[mes]} guardado ✓` : "Presupuesto base guardado ✓";
+  toast(msg);
   renderPresupuesto();
+  // Sync dashboard to show the same month and re-render
+  if (mes !== null) {
+    const dMes = document.getElementById("d-mes");
+    const dAnio = document.getElementById("d-anio");
+    if (dMes) dMes.value = mes;
+    if (dAnio) {
+      const anio = +document.getElementById("p-anio").value;
+      dAnio.value = anio;
+    }
+  }
+  renderDashboard();
 }
 
 // ── IMPORTAR DESDE EXCEL ──────────────────────────────────────
