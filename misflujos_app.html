@@ -1202,7 +1202,7 @@ function renderResumen(movs,y,m) {
               return chart.data.labels.map(function(label, i) {
                 const val = ds.data[i];
                 const pct = totalGastosPie>0 ? (val/totalGastosPie*100).toFixed(1) : 0;
-                return {text: label+" "+pct+"%", fillStyle: ds.backgroundColor[i], strokeStyle: ds.backgroundColor[i], index: i};
+                return {text: label+" "+pct+"%", fillStyle: ds.backgroundColor[i], strokeStyle: ds.backgroundColor[i], fontColor: "#E2EAF4", index: i};
               });
             }
           }
