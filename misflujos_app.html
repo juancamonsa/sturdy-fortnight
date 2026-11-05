@@ -920,7 +920,7 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 <style>#edit-mov-modal label{display:block;font-size:12px;opacity:.75;margin:10px 0 3px}#edit-mov-modal input,#edit-mov-modal select,#edit-mov-modal textarea{width:100%;padding:9px;border-radius:8px;border:1px solid rgba(128,128,128,.4);background:rgba(128,128,128,.12);color:inherit;font-size:14px;box-sizing:border-box}#edit-mov-modal select option{color:#000}</style>
 <label>Tipo</label><select id="e-tipo" onchange="editOnTipo()"><option>Gasto</option><option>Ingreso</option><option>Transferencia</option><option>Egreso</option></select>
 <label>Fecha</label><input type="date" id="e-fecha">
-<label>Monto</label><input type="text" id="e-monto" inputmode="numeric" oninput="fmtInput(this)">
+<label>Monto</label><input type="text" id="e-monto" inputmode="decimal" autocomplete="off">
 <label>Descripción</label><input type="text" id="e-desc">
 <div id="e-catwrap"><label>Categoría</label><select id="e-cat" onchange="editBuildSub()"></select>
 <label>Subcategoría</label><select id="e-sub"></select></div>
@@ -1677,7 +1677,7 @@ function openEditMov(id){
   document.getElementById("e-tipo").value=m.tipo;
   document.getElementById("e-fecha").value=m.fecha;
   const me=document.getElementById("e-monto");
-  me.value=Number(m.monto).toLocaleString("es-CO");me.dataset.raw=String(m.monto);
+  me.value=String(m.monto);
   document.getElementById("e-desc").value=m.descripcion||"";
   document.getElementById("e-notas").value=m.notas||"";
   if(DB.medios.includes(m.medio))document.getElementById("e-medio").value=m.medio;
@@ -1691,7 +1691,7 @@ function closeEditMov(){document.getElementById("edit-mov-modal").style.display=
 async function saveEditMov(){
   const m=DB.movimientos.find(x=>x.id===currentEditId);if(!m)return;
   const me=document.getElementById("e-monto");
-  const monto=parseMonto(me.dataset.raw||me.value);
+  const monto=parseMonto(me.value);
   const fecha=document.getElementById("e-fecha").value;
   if(!monto||monto<=0){toast("Monto inválido");return;}
   if(!fecha){toast("Selecciona una fecha");return;}
