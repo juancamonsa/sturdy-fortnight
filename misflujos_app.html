@@ -914,7 +914,23 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
     </div>
   </div>
 
-  <div class="toast-c" id="toasts"></div>
+  <div id="edit-mov-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center;padding:12px">
+<div style="background:var(--surface,#1e2330);color:var(--text,#fff);border-radius:12px;padding:18px;width:100%;max-width:480px;max-height:92vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.5)">
+<h3 style="margin:0 0 12px">✏️ Editar movimiento</h3>
+<style>#edit-mov-modal label{display:block;font-size:12px;opacity:.75;margin:10px 0 3px}#edit-mov-modal input,#edit-mov-modal select,#edit-mov-modal textarea{width:100%;padding:9px;border-radius:8px;border:1px solid rgba(128,128,128,.4);background:rgba(128,128,128,.12);color:inherit;font-size:14px;box-sizing:border-box}#edit-mov-modal select option{color:#000}</style>
+<label>Tipo</label><select id="e-tipo" onchange="editOnTipo()"><option>Gasto</option><option>Ingreso</option><option>Transferencia</option><option>Egreso</option></select>
+<label>Fecha</label><input type="date" id="e-fecha">
+<label>Monto</label><input type="text" id="e-monto" inputmode="numeric" oninput="fmtInput(this)">
+<label>Descripción</label><input type="text" id="e-desc">
+<div id="e-catwrap"><label>Categoría</label><select id="e-cat" onchange="editBuildSub()"></select>
+<label>Subcategoría</label><select id="e-sub"></select></div>
+<label>Medio de pago</label><select id="e-medio"></select>
+<label id="e-cuenta-label">Cuenta</label><select id="e-cuenta"></select>
+<div id="e-destwrap"><label>Cuenta destino</label><select id="e-cuenta-destino"></select></div>
+<label>Notas</label><textarea id="e-notas" rows="2"></textarea>
+<div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end"><button class="btn btn-ghost" onclick="closeEditMov()">Cancelar</button><button class="btn btn-primary" id="e-save" onclick="saveEditMov()">Guardar cambios</button></div>
+</div></div>
+<div class="toast-c" id="toasts"></div>
 
 <script>
 // ══════════════════════════════════════════
@@ -1142,6 +1158,14 @@ function renderDashboard() {
   const movs=filterMovs(y,m===null?undefined:m);
   renderKPIs(movs,y,m);
   renderResumen(movs,y,m);
+  // Re-render active tab if not resumen
+  const activeTab = document.querySelector(".tab[data-dtab].active");
+  if (activeTab) {
+    const tab = activeTab.dataset.dtab;
+    if (tab==="categorias") renderCatTab();
+    if (tab==="cuentas")    renderCuentasTab();
+    if (tab==="tendencia")  renderTendencia();
+  }
 }
 
 function renderKPIs(movs,y,m) {
@@ -1598,6 +1622,7 @@ function renderHList() {
         </div>
         <div class="hist-date">${fmtDate(m.fecha)}</div>
       </div>
+      <button class="hist-del" onclick="openEditMov('${m.id}')" title="Editar / reclasificar">✏️</button>
       <button class="hist-del" onclick="delMov('${m.id}')" title="Eliminar">🗑</button>
     </div>
   </div>`).join("");
@@ -1606,6 +1631,103 @@ function renderHList() {
     <button class="btn btn-ghost btn-sm" onclick="hPage--;renderHList()" ${hPage===0?"disabled":""}>‹ Anterior</button>
     <span class="text-sm text-muted">Mostrando ${start+1}–${end} de ${hFiltered.length} · Página ${hPage+1}/${tp||1}</span>
     <button class="btn btn-ghost btn-sm" onclick="hPage++;renderHList()" ${hPage>=tp-1?"disabled":""}>Siguiente ›</button>`;
+}
+
+
+// ── EDITAR / RECLASIFICAR MOVIMIENTO ──────────────────────────
+let currentEditId=null;
+function editFindPair(m){
+  if(m.tipo!=="Transferencia")return null;
+  return DB.movimientos.find(x=>x.id!==m.id&&x.tipo==="Transferencia"&&x.fecha===m.fecha&&Number(x.monto)===Number(m.monto)&&x.cuenta===m.cuenta_destino&&x.cuenta_destino===m.cuenta)||null;
+}
+function editBuildCat(selCatName){
+  const t=document.getElementById("e-tipo").value;
+  const sel=document.getElementById("e-cat");sel.innerHTML="";
+  DB.categorias.forEach(c=>{
+    const isIng=c.nombre.includes("💵");
+    if(t==="Gasto"&&isIng)return;
+    if(t==="Ingreso"&&!isIng)return;
+    sel.add(new Option(c.nombre,c.id));
+  });
+  const f=DB.categorias.find(c=>c.nombre===selCatName);
+  if(f&&[...sel.options].some(o=>o.value===f.id))sel.value=f.id;
+  editBuildSub();
+}
+function editBuildSub(selSub){
+  const cat=catById(document.getElementById("e-cat").value);
+  const sel=document.getElementById("e-sub");sel.innerHTML="";
+  if(cat)cat.subs.forEach(s=>sel.add(new Option(s,s)));
+  if(selSub&&cat&&cat.subs.includes(selSub))sel.value=selSub;
+}
+function editOnTipo(){
+  const t=document.getElementById("e-tipo").value;
+  const tr=t==="Transferencia",eg=t==="Egreso";
+  document.getElementById("e-destwrap").style.display=tr?"block":"none";
+  document.getElementById("e-catwrap").style.display=(tr||eg)?"none":"block";
+  document.getElementById("e-cuenta-label").textContent=tr?"Cuenta origen":"Cuenta";
+  if(!tr&&!eg)editBuildCat();
+}
+function openEditMov(id){
+  const m=DB.movimientos.find(x=>x.id===id);if(!m)return;
+  currentEditId=id;
+  const fill=(sid,arr)=>{const s=document.getElementById(sid);s.innerHTML="";arr.forEach(v=>s.add(new Option(v,v)));};
+  fill("e-medio",DB.medios);
+  fill("e-cuenta",DB.cuentas.map(c=>c.nombre));
+  fill("e-cuenta-destino",DB.cuentas.map(c=>c.nombre));
+  document.getElementById("e-tipo").value=m.tipo;
+  document.getElementById("e-fecha").value=m.fecha;
+  const me=document.getElementById("e-monto");
+  me.value=Number(m.monto).toLocaleString("es-CO");me.dataset.raw=String(m.monto);
+  document.getElementById("e-desc").value=m.descripcion||"";
+  document.getElementById("e-notas").value=m.notas||"";
+  if(DB.medios.includes(m.medio))document.getElementById("e-medio").value=m.medio;
+  if([...document.getElementById("e-cuenta").options].some(o=>o.value===m.cuenta))document.getElementById("e-cuenta").value=m.cuenta;
+  if(m.cuenta_destino)document.getElementById("e-cuenta-destino").value=m.cuenta_destino;
+  editOnTipo();
+  if(m.tipo==="Gasto"||m.tipo==="Ingreso"){editBuildCat(m.categoria);editBuildSub(m.subcategoria);}
+  document.getElementById("edit-mov-modal").style.display="flex";
+}
+function closeEditMov(){document.getElementById("edit-mov-modal").style.display="none";currentEditId=null;}
+async function saveEditMov(){
+  const m=DB.movimientos.find(x=>x.id===currentEditId);if(!m)return;
+  const me=document.getElementById("e-monto");
+  const monto=parseMonto(me.dataset.raw||me.value);
+  const fecha=document.getElementById("e-fecha").value;
+  if(!monto||monto<=0){toast("Monto inválido");return;}
+  if(!fecha){toast("Selecciona una fecha");return;}
+  const tipo=document.getElementById("e-tipo").value;
+  const esT=tipo==="Transferencia",esE=tipo==="Egreso";
+  const cuenta=document.getElementById("e-cuenta").value;
+  const dest=esT?document.getElementById("e-cuenta-destino").value:"";
+  if(esT&&dest===cuenta){toast("Origen y destino deben ser distintas");return;}
+  const cat=catById(document.getElementById("e-cat").value);
+  const d=new Date(fecha+"T12:00:00");
+  const desc=document.getElementById("e-desc").value.trim()||(esT?`Transf. → ${dest}`:esE?"Egreso cuenta":"");
+  const upd={
+    fecha,tipo,monto,descripcion:desc,
+    categoria:esT?"🔄 Transferencia":esE?"🏧 Egreso":(cat?.nombre||m.categoria),
+    subcategoria:esT?`→ ${dest}`:esE?"Egreso bancario":(document.getElementById("e-sub").value||m.subcategoria),
+    medio:document.getElementById("e-medio").value,
+    cuenta,cuenta_destino:dest,
+    notas:document.getElementById("e-notas").value.trim(),
+    mes:d.getMonth(),anio:d.getFullYear()
+  };
+  const btn=document.getElementById("e-save");btn.disabled=true;
+  try{
+    const pair=editFindPair(m);
+    await sbPatch("movimientos","id=eq."+encodeURIComponent(m.id),upd);
+    Object.assign(m,upd);
+    if(pair){await deleteMovFromSupabase(pair.id);DB.movimientos=DB.movimientos.filter(x=>x.id!==pair.id);}
+    if(esT){
+      const md={...m,id:Date.now().toString(36)+"_d",cuenta:dest,cuenta_destino:cuenta,descripcion:`Transf. desde ${cuenta}`,subcategoria:`← ${cuenta}`};
+      await saveMovToSupabase(md);
+      DB.movimientos.push(md);
+    }
+    save();closeEditMov();applyHFilters();
+    try{reRenderActive();}catch(e){}
+    toast("Movimiento actualizado ✓");
+  }catch(e){toast("Error al guardar: "+e.message);}
+  finally{btn.disabled=false;}
 }
 
 async function delMov(id) {
