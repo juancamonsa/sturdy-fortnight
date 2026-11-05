@@ -1715,7 +1715,8 @@ async function saveEditMov(){
   const btn=document.getElementById("e-save");btn.disabled=true;
   try{
     const pair=editFindPair(m);
-    await sbPatch("movimientos","id=eq."+encodeURIComponent(m.id),upd);
+    const res=await sbPatch("movimientos","id=eq."+encodeURIComponent(m.id),upd);
+    if(!Array.isArray(res)||res.length===0)throw new Error("La base de datos no aceptó el cambio (revisa las políticas UPDATE en Supabase)");
     Object.assign(m,upd);
     if(pair){await deleteMovFromSupabase(pair.id);DB.movimientos=DB.movimientos.filter(x=>x.id!==pair.id);}
     if(esT){
